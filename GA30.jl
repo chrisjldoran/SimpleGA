@@ -9,6 +9,7 @@ import Base.show
 const e1 = MVodd(0,1,0,0)
 const e2 = MVodd(0,0,1,0)
 const e3 = MVodd(0,0,0,1)
+const I3 = MVodd(1,0,0,0)
 
 #Sets tolerance for not displaying results. Does not change the underlying multivector.
 function approxzero(x::Float64)
