@@ -98,3 +98,14 @@ function project(a::Quaternion, n::Integer)
         return qzero
     end
 end
+
+#Exponentiation
+function exp2(a::Quaternion)
+    a = project(a,2)
+    nrm = sqrt(scp(a,-a))
+    if iszero(nrm)
+        return 1.0
+    else
+        return cos(nrm) + sin(nrm)*a/nrm
+    end
+end
