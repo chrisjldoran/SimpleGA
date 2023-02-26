@@ -140,6 +140,6 @@ function exp(a::MVeven)
     MVeven(exp(a.c1))
 end
 
-function exp2(a::MVeven)
+function expb(a::MVeven)
     MVeven(exp(im*a.c1.im))
 end

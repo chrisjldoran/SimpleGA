@@ -10,6 +10,7 @@ import Base.:*
 import Base.:+
 import Base.:-
 import Base.:/
+import Base.exp
 
 struct MVeven
     qp::Quaternion
@@ -137,3 +138,11 @@ function scp(a::MVodd, b::MVodd)
     0.5*(scp(a.qp,b.qm) + scp(a.qm,b.qp))
 end
 
+#Exponentiation
+function expb(a::MVeven)
+    return MVeven(expb(a.qp), expb(a.qm))
+end
+
+function exp(a::MVeven)
+    return MVeven(exp(a.qp), exp(a.qm))
+end
