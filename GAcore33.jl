@@ -8,6 +8,7 @@ import Base.:*
 import Base.:+
 import Base.:-
 import Base.:/
+import Base.exp
 
 struct MVeven
     p::SArray{Tuple{4,4},Float64,2,16}
@@ -147,4 +148,17 @@ end
 
 function scp(a::MVodd, b::MVodd)
     (tr(a.p*b.m)+tr(a.m*b.p))/8   
+end
+
+
+#Exponentiation
+function exp(a::MVeven)
+    return MVeven(exp(a.p),exp(a.m))
+end
+
+#TODO Any improvement here?
+function expb(a::MVeven)
+    a = project(a,2)
+    R = exp(a)
+    return R - 0.5*(R*reverse(R)-1)*R
 end

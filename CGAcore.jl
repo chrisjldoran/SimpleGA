@@ -188,5 +188,6 @@ end
 #TODO - investigate if closed form gives any performance benefits. Suspect all the if statements would slow this down.
 function expb(a::MVeven)
     a = project(a,2)
-    return exp(a)
+    R = exp(a)
+    return R - 0.5*(R*reverse(R)-1)*R
 end  
