@@ -8,6 +8,7 @@ import Base.:*
 import Base.:+
 import Base.:-
 import Base.:/
+import Base.exp
 
 struct MVeven
     w::Float64
@@ -147,4 +148,24 @@ end
 
 function scp(a::MVodd, b::MVodd)
     -a.w*b.w + a.x*b.x + a.y*b.y + a.z*b.z
+end
+
+#Exponentiation
+function expb(a::MVeven)
+    a = project(a,2)
+    nrm = sqrt(scp(a,-a))
+    if iszero(nrm)
+        return MVeven(one(nrm),0,0,0)
+    else
+        return cos(nrm) + sin(nrm)*a/nrm
+    end
+end
+
+function exp(a::MVeven)
+    R = exp2(a)
+    if iszero(a.w)
+        return R
+    else 
+        return exp(a.w)*R
+    end
 end

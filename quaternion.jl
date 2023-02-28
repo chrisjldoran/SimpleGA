@@ -10,6 +10,7 @@ import Base.:*
 import Base.:+
 import Base.:-
 import Base.:/
+import Base.exp
 
 struct Quaternion
     w::Float64
@@ -98,3 +99,24 @@ function project(a::Quaternion, n::Integer)
         return qzero
     end
 end
+
+#Exponentiation
+function expb(a::Quaternion)
+    a = project(a,2)
+    nrm = sqrt(scp(a,-a))
+    if iszero(nrm)
+        return Quaternion(one(nrm),0,0,0)
+    else
+        return cos(nrm) + sin(nrm)*a/nrm
+    end
+end
+
+function exp(a::Quaternion)
+    R = expb(a)
+    if iszero(a.w)
+        return R
+    else 
+        return exp(a.w)*R
+    end
+end
+

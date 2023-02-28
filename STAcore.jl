@@ -8,6 +8,7 @@ import Base.:*
 import Base.:+
 import Base.:-
 import Base.:/
+import Base.exp
 
 struct MVeven
     c1::ComplexF64
@@ -150,4 +151,26 @@ end
 
 function scp(a::MVodd, b::MVodd)
    0.5*real(a.c1*conj(b.c4) - a.c2*conj(b.c2) + a.c4*conj(b.c1) - a.c3*conj(b.c3))    
+end
+
+#Exponentiation
+function expb(a::MVeven)
+    a = project(a,2)
+    aa = a*a
+    fct = sqrt(0.5*(aa.c1+aa.c4))
+    if iszero(fct)
+        return 1+a
+    else
+        return cosh(fct)+sinh(fct)/fct*a
+    end
+end
+
+function exp(a::MVeven)
+    R = expb(a)
+    fct = 0.5*(a.c1+a.c4)
+    if iszero(fct)
+        return R
+    else
+        return exp(fct)*R
+    end
 end

@@ -7,6 +7,7 @@ import Base.:*
 import Base.:+
 import Base.:-
 import Base.:/
+import Base.exp
 
 struct MVeven
     c1::ComplexF64
@@ -132,4 +133,13 @@ end
 
 function scp(a::MVodd, b::MVodd)
    real(conj(a.c1)*b.c1)
+end
+
+#Exponentiation
+function exp(a::MVeven)
+    MVeven(exp(a.c1))
+end
+
+function expb(a::MVeven)
+    MVeven(exp(im*a.c1.im))
 end

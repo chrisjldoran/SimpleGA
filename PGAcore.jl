@@ -11,6 +11,7 @@ import Base.:*
 import Base.:+
 import Base.:-
 import Base.:/
+import Base.exp
 
 struct MVeven
     q::Quaternion
@@ -136,4 +137,24 @@ end
 
 function scp(a::MVodd, b::MVodd)
     -scp(a.q,b.q)
+end
+
+#Exponentiation
+function expb(a::MVeven)
+    a = project(a,2)
+    aa = -a*a
+    if iszero(scp(aa))
+        return 1+a
+    else
+        f0 = sqrt(scp(aa))
+        f1 = aa.n.w/2/f0
+        cf = MVeven(Quaternion(cos(f0),0,0,0), Quaternion(-f1*sin(f0),0,0,0))
+        sncf = MVeven(Quaternion(sin(f0)/f0,0,0,0),  Quaternion(f1/f0^2*(f0*cos(f0) - sin(f0)),0,0,0))
+        return cf + sncf*a
+    end
+end
+
+function exp(a::MVeven)
+    R = expb(a)
+    return exp(a.q.w)*(1+project(a,4))*R
 end

@@ -9,6 +9,7 @@ import Base.:*
 import Base.:+
 import Base.:-
 import Base.:/
+import Base.exp
 
 struct MVeven
     q1::Quaternion
@@ -162,3 +163,31 @@ function scp(a::MVodd, b::MVodd)
     -0.5*(scp(a.q1,b.q1) - scp(a.q2,b.q3) + scp(a.q4,b.q4) - scp(a.q3,b.q2))    
 end
 
+#Exponentiation
+function mvnrm(a::MVeven)
+    return scp(a.q1,reverse(a.q1))+ scp(a.q2,reverse(a.q2))+ scp(a.q3,reverse(a.q3))+ scp(a.q4,reverse(a.q4))
+end
+
+#Uses a simple scale and square implementation.
+function exp(a::MVeven)
+    s = ceil(Int,log(2,mvnrm(a)))
+    a = 1/2^s*a
+    res = 1+a
+    powa = a
+    for i in 2:13
+        powa *= a/i
+        res += powa
+    end
+    for i in 1:s
+        res = res*res
+    end
+    return res
+end
+
+#Remove non-bivector terms. 
+#TODO - investigate if closed form gives any performance benefits. Suspect all the if statements would slow this down.
+function expb(a::MVeven)
+    a = project(a,2)
+    R = exp(a)
+    return R - 0.5*(R*reverse(R)-1)*R
+end  
