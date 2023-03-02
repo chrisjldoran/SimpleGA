@@ -10,26 +10,26 @@ import Base.:-
 import Base.:/
 import Base.exp
 
+#The Multivector type assumes that the blade list is unique and in order. But we want to avoid checking this at runtime.
+#Only use this constructor if you are certain the blade list is correct. If not, use constructMV()
 struct Multivector
     bas::Vector{UInt8}
     val::Vector{Float64}
-    function Multivector(bs,vs)
-        if length(bs) != length(unique(bs))
-            error("List of blades must be unique")
-        end
-        if issorted(bs)
-            new(bs,vs)
-        else
-            p = sortperm(bs)
-            new(sort(bs),vs[p])
-        end
+end
+
+function constructMV(bs,vs)
+    if length(bs) != length(unique(bs))
+        error("List of blades must be unique")
+    else
+        p = sortperm(bs)
+        return Multivector(sort(bs),vs[p])
     end
 end
 
 
 #Addition / subtraction
 function -(mv::Multivector)
-    Multivector(mv.bas,-rsval)
+    Multivector(mv.bas,-mv.val)
 end
 
 function +(mv1::Multivector, mv2::Multivector)

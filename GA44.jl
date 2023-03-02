@@ -23,26 +23,16 @@ function bldless(x::Blade,y::Blade)
     end
 end
 
-# Basic encodings, used below. Could hide these
-be1 = parse(UInt8, "00000001", base=2)
-be2 = parse(UInt8, "00000111", base=2)
-be3 = parse(UInt8, "00011111", base=2)
-be4 = parse(UInt8, "01111111", base=2)
-bf1 = parse(UInt8, "00000010", base=2)
-bf2 = parse(UInt8, "00001011", base=2)
-bf3 = parse(UInt8, "00101111", base=2)
-bf4 = parse(UInt8, "10111111", base=2)
-
 
 # Constructors
-e1 = Multivector([be1],[1.0])
-e2 = Multivector([be2],[1.0])
-e3 = Multivector([be3],[1.0])
-e4 = Multivector([be4],[1.0])
-f1 = Multivector([bf1],[1.0])
-f2 = Multivector([bf2],[1.0])
-f3 = Multivector([bf3],[1.0])
-f4 = Multivector([bf4],[1.0])
+const e1 = Multivector([parse(UInt8, "00000001", base=2)],[1.0])
+const e2 = Multivector([parse(UInt8, "00000111", base=2)],[1.0])
+const e3 = Multivector([parse(UInt8, "00011111", base=2)],[1.0])
+const e4 = Multivector([parse(UInt8, "01111111", base=2)],[1.0])
+const f1 = Multivector([parse(UInt8, "00000010", base=2)],[1.0])
+const f2 = Multivector([parse(UInt8, "00001011", base=2)],[1.0])
+const f3 = Multivector([parse(UInt8, "00101111", base=2)],[1.0])
+const f4 = Multivector([parse(UInt8, "10111111", base=2)],[1.0])
 
 
 #Additional functions

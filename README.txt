@@ -7,6 +7,7 @@ GA(1,3) (STA): STA.jl
 GA(4,1) (CGA): CGA.jl
 GA(3,3): GA33.jl
 GA(3,0,1) (PGA): PGA.jl
+GA(4,4): GA44.jl
 
 For efficiency we separate out even and odd entries, and only implement products between these. It is not possible to mix even and odd entries in a single multivector. If this is required, you should work in an algebra 1 dimension higher. So to mix even and odd in GA(3,0), work instead in STA. (There are good reasons for working like this anyway).
 
@@ -34,7 +35,10 @@ The other rules exposed are:
 - project(A,n). Returns the grade-n part of A, in the form of a multivector.
 - scp(A). Returns the scalar part of A as a scalar. 
 - scp(A,B). Returns the scalar part of the product AB. Note that this form is more efficient that scp(A*B) as only the terms contributing to the scalar part are calculated.
+- exp(). Exponentiation of an even multivector
+- expb(). Faster version of exponentiation when the argument is asumed to be a bivector.
 
 The scp operator is the main workhorse for extracting real values back out from multivectors. Any other product you want to define can be built from * and projection onto grade.
 
+The safest way to construct multivectors is to build them from the basis elements (defined as 'consts'). Separate constructors do exist, but they are different for each algebra.
 
