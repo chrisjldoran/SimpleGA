@@ -10,6 +10,12 @@ import Base.:-
 import Base.:/
 import Base.exp
 
+using SparseArrays
+
+#This avoids rounding error bloating multivectors. Set to zero if unsure
+const mvtol = 1e-14
+sparsify(x, eps) = abs(x) < eps ? 0.0 : x
+
 #The Multivector type assumes that the blade list is unique and in order. But we want to avoid checking this at runtime.
 #Only use this constructor if you are certain the blade list is correct. If not, use constructMV()
 struct Multivector
@@ -32,20 +38,13 @@ function -(mv::Multivector)
     Multivector(mv.bas,-mv.val)
 end
 
+
 function +(mv1::Multivector, mv2::Multivector)
-    rsbas=sort(union(mv1.bas,mv2.bas))
-    ln=length(rsbas)
-    rsval=zeros(Float64,ln)
-    for i in 1:length(mv1.bas)
-        j=findfirst(isequal(mv1.bas[i]),rsbas)
-        rsval[j]+=mv1.val[i]
-    end
-    for i in 1:length(mv2.bas)
-        j=findfirst(isequal(mv2.bas[i]),rsbas)
-        rsval[j]+=mv2.val[i]
-    end
-    return Multivector(rsbas,rsval)
+    res = SparseVector(64,mv1.bas .+ 1, mv1.val) + SparseVector(64,mv2.bas .+ 1, mv2.val)
+    sps = sparse(sparsify.(res,mvtol))
+    return Multivector(sps.nzind .- 1,sps.nzval)
 end
+
 
 function +(nm::Number,mv::Multivector)
     mv2 = Multivector([0x00],[convert(Float64,nm)])
@@ -69,8 +68,8 @@ function -(mv1::Multivector,mv2::Multivector)
 end
 
 #Multiplication
-function gaprodsign(bld1, bld2)
-    #Expects UInt8s for now
+function gaprodsign(bld1::UInt8, bld2::UInt8)
+    #Expects UInt8s
     tp1 = xor( bld2, bld2 << 1 )
     cntones = count_ones((bld1 & 0xaa) & tp1)
     return convert(Int8, 1 - 2* (cntones % 2))
@@ -78,23 +77,16 @@ end
 
 
 function *(mv1::Multivector,mv2::Multivector)
-    blds = [xor(x,y) for x in mv1.bas for y in mv2.bas]
-    resbas = sort(unique(blds))
-    return mvprod1(mv1,mv2,resbas)
-end 
-
-#Does full product
-#TODO Could implement a version of this projecting onto a subset.
-function mvprod1(mv1::Multivector,mv2::Multivector,bas::Vector{UInt8})
-    res = zeros(Float64,length(bas))
+    res = zeros(Float64,64)
     for i in 1:length(mv1.bas)
         for j in 1:length(mv2.bas)
-            k = findfirst(isequal(xor(mv1.bas[i],mv2.bas[j])),bas)
-            res[k]+=gaprodsign(mv1.bas[i],mv2.bas[j])*mv1.val[i]*mv2.val[j]
+            res[xor(mv1.bas[i],mv2.bas[j])+1] += gaprodsign(mv1.bas[i],mv2.bas[j])*mv1.val[i]*mv2.val[j]
         end
     end
-    return Multivector(bas,res)
+    sps = sparse(sparsify.(res,mvtol))
+    return Multivector(sps.nzind .- 1,sps.nzval)
 end
+
 
 function *(num::Number,mv::Multivector)
     num = convert(Float64,num)
