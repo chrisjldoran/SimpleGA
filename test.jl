@@ -115,9 +115,9 @@ me1*(mo2*mo3) - (me1*mo2)*mo3
 mo1*(mo2*mo3) - (mo1*mo2)*mo3
 
 #Rotation
-f1 = me1*e1*reverse(me1)
-f2 = me1*e2*reverse(me1)
-scp(f1,f2)
+f1 = me1*e1*me1'
+f2 = me1*e2*me1'
+dot(f1,f2)
 
 #Projection
 me1  - project(me1,0) - project(me1,2) - project(me1,4) - project(me1,6)

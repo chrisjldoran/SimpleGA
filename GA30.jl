@@ -3,7 +3,6 @@ Code for GA(3,0). Even and odd elements are stored as quaternions.
 =#
 
 module GA30
-export scp, project, reverse, expb
 
 include("GAcore30.jl")
 include("GAcommon.jl")
