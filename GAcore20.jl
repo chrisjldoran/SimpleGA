@@ -8,6 +8,11 @@ import Base.:+
 import Base.:-
 import Base.:/
 import Base.exp
+import LinearAlgebra.tr
+import LinearAlgebra.dot
+import LinearAlgebra.adjoint
+import ..project
+import ..expb
 
 struct MVeven
     c1::ComplexF64
@@ -96,11 +101,11 @@ function /(a::MVeven,b::MVeven)
 end
 
 #Reverse
-function reverse(a::MVeven)
+function adjoint(a::MVeven)
     MVeven(conj(a.c1))
 end
 
-function reverse(a::MVodd)
+function adjoint(a::MVodd)
     return a
 end
 
@@ -123,15 +128,15 @@ function project(a::MVodd,n::Integer)
     end
 end
 
-function scp(a::MVeven)
+function tr(a::MVeven)
     real(a.c1)
 end
 
-function scp(a::MVeven, b::MVeven)
+function dot(a::MVeven, b::MVeven)
     real(a.c1*b.c1)    
 end
 
-function scp(a::MVodd, b::MVodd)
+function dot(a::MVodd, b::MVodd)
    real(conj(a.c1)*b.c1)
 end
 

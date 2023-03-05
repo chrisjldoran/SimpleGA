@@ -2,6 +2,8 @@
 Code for GA(4,0). Even and odd elements are stored as quaternion pairs.
 =#
 
+module GA40
+
 include("GAcore40.jl")
 include("GAcommon.jl")
 import Base.show
@@ -20,28 +22,28 @@ const E4 = e1*e2*e3*e4
 
 function mvtype(a::MVeven)
     res=""
-    scl = scp(a)
+    scl = tr(a)
     tp = approxzero(scl) ? "" : " + " * string(scl)
     res *= tp
-    scl = scp(a,-e1*e2)
+    scl = dot(a,-e1*e2)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e1e2"
     res *= tp
-    scl = scp(a,-e2*e3)
+    scl = dot(a,-e2*e3)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e2e3"
     res *= tp
-    scl = scp(a,-e3*e1)
+    scl = dot(a,-e3*e1)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e3e1"
     res *= tp
-    scl = scp(a,-e1*e4)
+    scl = dot(a,-e1*e4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e1e4"
     res *= tp
-    scl = scp(a,-e2*e4)
+    scl = dot(a,-e2*e4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e2e4"
     res *= tp
-    scl = scp(a,-e3*e4)
+    scl = dot(a,-e3*e4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e3e4"
     res *= tp
-    scl = scp(a,E4)
+    scl = dot(a,E4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "E4"
     res *= tp
     if (length(res) == 0)
@@ -58,28 +60,28 @@ end
 
 function mvtype(a::MVodd)
     res=""
-    scl = scp(a,e1)
+    scl = dot(a,e1)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e1"
     res *= tp
-    scl = scp(a,e2)
+    scl = dot(a,e2)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e2"
     res *= tp
-    scl = scp(a,e3)
+    scl = dot(a,e3)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e3"
     res *= tp
-    scl = scp(a,e4)
+    scl = dot(a,e4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e4"
     res *= tp
-    scl = scp(a,-e1*E4)
+    scl = dot(a,-e1*E4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e1E4"
     res *= tp
-    scl = scp(a,-e2*E4)
+    scl = dot(a,-e2*E4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e2E4"
     res *= tp
-    scl = scp(a,-e3*E4)
+    scl = dot(a,-e3*E4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e3E4"
     res *= tp
-    scl = scp(a,-e4*E4)
+    scl = dot(a,-e4*E4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e4E4"
     res *= tp
     if (length(res) == 0)
@@ -92,4 +94,7 @@ end
 
 function Base.show(io::IO, mv::MVodd)
     print(mvtype(mv))
+end
+
+
 end

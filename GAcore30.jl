@@ -9,6 +9,11 @@ import Base.:+
 import Base.:-
 import Base.:/
 import Base.exp
+import LinearAlgebra.tr
+import LinearAlgebra.dot
+import LinearAlgebra.adjoint
+import ..project
+import ..expb
 
 struct MVeven
     w::Float64
@@ -109,11 +114,11 @@ function /(a::MVodd,num::Number)
 end
 
 #Reverse
-function reverse(a::MVeven)
+function adjoint(a::MVeven)
     MVeven(a.w,-a.x, -a.y, -a.z)
 end
 
-function reverse(a::MVodd)
+function adjoint(a::MVodd)
     MVodd(-a.w,a.x, a.y, a.z)
 end
 
@@ -138,22 +143,22 @@ function project(a::MVodd,n::Integer)
     end
 end
 
-function scp(a::MVeven)
+function tr(a::MVeven)
     a.w
 end
 
-function scp(a::MVeven, b::MVeven)
+function dot(a::MVeven, b::MVeven)
     a.w*b.w - a.x*b.x - a.y*b.y - a.z*b.z
 end
 
-function scp(a::MVodd, b::MVodd)
+function dot(a::MVodd, b::MVodd)
     -a.w*b.w + a.x*b.x + a.y*b.y + a.z*b.z
 end
 
 #Exponentiation
 function expb(a::MVeven)
     a = project(a,2)
-    nrm = sqrt(scp(a,-a))
+    nrm = sqrt(dot(a,-a))
     if iszero(nrm)
         return MVeven(one(nrm),0,0,0)
     else
@@ -162,10 +167,11 @@ function expb(a::MVeven)
 end
 
 function exp(a::MVeven)
-    R = exp2(a)
+    R = expb(a)
     if iszero(a.w)
         return R
     else 
         return exp(a.w)*R
     end
 end
+

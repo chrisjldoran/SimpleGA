@@ -2,7 +2,6 @@
 Code for GA(2,0). Even and odd elements are stored as complex numbers.
 =#
 module GA20
-export scp, project, reverse, expb
 
 include("GAcore20.jl")
 include("GAcommon.jl")
