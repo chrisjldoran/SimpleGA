@@ -13,6 +13,9 @@ const e2 = MVodd(0,0,1,0)
 const e3 = MVodd(0,0,0,1)
 const I3 = MVodd(1,0,0,0)
 
+bas30 = [e1,e2,e3]
+export bas30
+
 #Sets tolerance for not displaying results. Does not change the underlying multivector.
 function approxzero(x::Float64)
     isapprox(x,0.0; atol = 1e-14)

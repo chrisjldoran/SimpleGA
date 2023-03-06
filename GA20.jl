@@ -16,6 +16,9 @@ const e1 = MVodd(1)
 const e2 = MVodd(im)
 const I2 = MVeven(im)
 
+bas20 = [e1,e2]
+export bas20
+
 
 #Sets tolerance for not displaying results. 
 function approxzero(x::Float64)
