@@ -4,7 +4,7 @@ using LinearAlgebra
 
 module Quaternions
 include("quaternion.jl")
-export quat, real_part, imag_part, expb, qzero
+export quat, real_part, imag_part, expb, qzero, Quaternion
 
 end #module
 
@@ -12,7 +12,7 @@ end #module
 module GA
 
 using ..Quaternions
-export project, expb, inject
+export project, expb, inject, basis
 
 function project() end
 
@@ -22,13 +22,24 @@ end
 
 include("GA20.jl")
 using .GA20
-export bas20
 
 include("GA30.jl")
 using .GA30
-export bas30
-
 
 #include("GA40.jl")
+#using .GA40
+
+function basis(alg)
+    if alg == "GA20" 
+        return bas20
+    elseif alg =="GA30"
+        return bas30
+    elseif alg =="GA40"
+        return bas40
+    end
+end
+
+
+
 
 end #module

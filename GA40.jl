@@ -20,6 +20,9 @@ const e3 = MVodd(Quaternion(0,0,0,1), Quaternion(0,0,0,-1))
 const e4 = MVodd(Quaternion(1,0,0,0), Quaternion(1,0,0,0))
 const E4 = e1*e2*e3*e4
 
+bas40 = [e1,e2,e3,e4]
+export bas40
+
 function mvtype(a::MVeven)
     res=""
     scl = tr(a)
