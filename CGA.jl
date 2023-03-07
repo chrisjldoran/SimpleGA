@@ -2,6 +2,8 @@
 Code for GA(4,1). 
 =#
 
+module CGA
+
 include("CGAcore.jl")
 include("GAcommon.jl")
 import Base.show
@@ -18,6 +20,9 @@ const e3 = MVodd(Quaternion(0,0,0,1),qzero,qzero,Quaternion(0,0,0,-1))
 const e4 = MVodd(qzero,Quaternion(1,0,0,0),Quaternion(1,0,0,0),qzero)
 const f4 = MVodd(qzero,Quaternion(-1,0,0,0),Quaternion(1,0,0,0),qzero)
 const I5 = e1*e2*e3*e4*f4
+
+basCGA = [e1,e2,e3,e4,f4]
+export basCGA
 
 function mvtype(a::MVeven)
     res=""
@@ -77,9 +82,6 @@ function mvtype(a::MVeven)
     return res
 end
 
-function Base.show(io::IO, mv::MVeven)
-    print(mvtype(mv))
-end
 
 function mvtype(a::MVodd)
     res=""
@@ -139,6 +141,6 @@ function mvtype(a::MVodd)
     return res
 end
 
-function Base.show(io::IO, mv::MVodd)
-    print(mvtype(mv))
-end
+include("GAshow.jl")
+
+end #Module

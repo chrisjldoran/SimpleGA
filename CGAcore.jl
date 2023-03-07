@@ -3,13 +3,18 @@ Core code for the implementation of GA(4,1).
 Representation is as a 2x2 matrix of quaternions.
 =#
 
-include("quaternion.jl")
-
 import Base.:*
 import Base.:+
 import Base.:-
 import Base.:/
 import Base.exp
+import LinearAlgebra.tr
+import LinearAlgebra.dot
+import LinearAlgebra.adjoint
+import ..project
+import ..expb
+
+using ..Quaternions
 
 struct MVeven
     q1::Quaternion
@@ -112,12 +117,12 @@ function /(a::MVodd,num::Number)
 end
 
 #Reverse
-function reverse(a::MVeven)
-    MVeven(reverse(a.q4),reverse(a.q2), reverse(a.q3), reverse(a.q1))
+function adjoint(a::MVeven)
+    MVeven(conj(a.q4),conj(a.q2), conj(a.q3), conj(a.q1))
 end
 
-function reverse(a::MVodd)
-    MVodd(reverse(a.q4),reverse(a.q2), reverse(a.q3), reverse(a.q1))
+function adjoint(a::MVodd)
+    MVodd(conj(a.q4),conj(a.q2), conj(a.q3), conj(a.q1))
 end
 
 #Grade and projection
@@ -125,12 +130,12 @@ function project(a::MVeven,n::Integer)
     if (n==0)
         return MVeven(0.5*(a.q1.w+a.q4.w)*qone, qzero, qzero, 0.5*(a.q1.w+a.q4.w)*qone)
     elseif (n==2)
-        qtmp = project(0.5*(a.q1+a.q4),2)
+        qtmp = imag_part(0.5*(a.q1+a.q4))
         stmp = 0.5*(a.q1.w - a.q4.w)
-        return MVeven(stmp+qtmp, project(a.q2,2), project(a.q3,2), -stmp+ qtmp )
+        return MVeven(stmp+qtmp, imag_part(a.q2), imag_part(a.q3), -stmp+ qtmp )
     elseif (n==4)
-        qtmp = project(0.5*(a.q1-a.q4),2)
-        return MVeven(qtmp, project(a.q2,0), project(a.q3,0), -qtmp )
+        qtmp = imag_part(0.5*(a.q1-a.q4))
+        return MVeven(qtmp, imag_part(a.q2), real_part(a.q3), -qtmp )
     else
         return MVeven(qzero,qzero,qzero,qzero)
     end
@@ -140,46 +145,44 @@ function project(a::MVodd,n::Integer)
     if (n==5)
         return MVodd(0.5*(a.q1.w+a.q4.w)*qone, qzero, qzero, 0.5*(a.q1.w+a.q4.w)*qone)
     elseif (n==3)
-        qtmp = project(0.5*(a.q1+a.q4),2)
+        qtmp = imag_part(0.5*(a.q1+a.q4))
         stmp = 0.5*(a.q1.w - a.q4.w)
-        return MVodd(stmp+qtmp, project(a.q2,2), project(a.q3,2), -stmp+ qtmp )
+        return MVodd(stmp+qtmp, imag_part(a.q2), imag_part(a.q3), -stmp+ qtmp )
     elseif (n==1)
-        qtmp = project(0.5*(a.q1-a.q4),2)
-        return MVodd(qtmp, project(a.q2,0), project(a.q3,0), -qtmp )
+        qtmp = imag_part(0.5*(a.q1-a.q4))
+        return MVodd(qtmp, real_part(a.q2), real_part(a.q3), -qtmp )
     else
         return MVodd(qzero,qzero,qzero,qzero)
     end
 end
 
-function scp(a::MVeven)
+function tr(a::MVeven)
     0.5*(a.q1.w + a.q4.w)
 end
 
-function scp(a::MVeven, b::MVeven)
-    0.5*(scp(a.q1,b.q1) - scp(a.q2,b.q3) + scp(a.q4,b.q4) - scp(a.q3,b.q2))    
+function dot(a::MVeven, b::MVeven)
+    0.5*(dot(a.q1,b.q1) - dot(a.q2,b.q3) + dot(a.q4,b.q4) - dot(a.q3,b.q2))    
 end
 
-function scp(a::MVodd, b::MVodd)
-    -0.5*(scp(a.q1,b.q1) - scp(a.q2,b.q3) + scp(a.q4,b.q4) - scp(a.q3,b.q2))    
+function dot(a::MVodd, b::MVodd)
+    -0.5*(dot(a.q1,b.q1) - dot(a.q2,b.q3) + dot(a.q4,b.q4) - dot(a.q3,b.q2))    
 end
 
 #Exponentiation
-function mvnrm(a::MVeven)
-    return scp(a.q1,reverse(a.q1))+ scp(a.q2,reverse(a.q2))+ scp(a.q3,reverse(a.q3))+ scp(a.q4,reverse(a.q4))
-end
-
 #Uses a simple scale and square implementation.
 function exp(a::MVeven)
-    s = ceil(Int,log(2,mvnrm(a)))
+    anrm = dot(a.q1,conj(a.q1))+dot(a.q2,conj(a.q2))+dot(a.q3,conj(a.q3))+dot(a.q4,conj(a.q4))
+    s = max(ceil(Int,log(2,anrm))-1,0)
     a = 1/2^s*a
     res = 1+a
     powa = a
-    for i in 2:13
+    for i in 2:12
         powa *= a/i
         res += powa
     end
-    for i in 1:s
+    while s > 0
         res = res*res
+        s -= 1
     end
     return res
 end
@@ -189,5 +192,6 @@ end
 function expb(a::MVeven)
     a = project(a,2)
     R = exp(a)
-    return R - 0.5*(R*reverse(R)-1)*R
+    delt = R*R'-1
+    return (1-0.5*delt + 0.125*delt*delt)*R
 end  

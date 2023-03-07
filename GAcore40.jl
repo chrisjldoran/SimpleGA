@@ -15,6 +15,8 @@ import LinearAlgebra.adjoint
 import ..project
 import ..expb
 
+using ..Quaternions
+
 struct MVeven
     qp::Quaternion
     qm::Quaternion
@@ -99,11 +101,11 @@ end
 
 #Reverse
 function adjoint(a::MVeven)
-    MVeven(reverse(a.qp),reverse(a.qm))
+    MVeven(conj(a.qp),conj(a.qm))
 end
 
 function adjoint(a::MVodd)
-    MVodd(reverse(a.qm),reverse(a.qp))
+    MVodd(conj(a.qm),conj(a.qp))
 end
 
 #Grade and projection
@@ -134,11 +136,11 @@ function tr(a::MVeven)
 end
 
 function dot(a::MVeven, b::MVeven)
-    0.5*(scp(a.qp,b.qp) + scp(a.qm,b.qm))
+    0.5*(dot(a.qp,b.qp) + dot(a.qm,b.qm))
 end
 
 function dot(a::MVodd, b::MVodd)
-    0.5*(scp(a.qp,b.qm) + scp(a.qm,b.qp))
+    0.5*(dot(a.qp,b.qm) + dot(a.qm,b.qp))
 end
 
 #Exponentiation

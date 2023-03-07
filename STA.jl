@@ -3,7 +3,7 @@ Code for GA(1,3). Even and odd elements are stored as complex 'matrices'.
 Gamma and sigma used for pretty typing.
 =#
 
-#Wrapper for FastSTA code
+module STA
 
 include("STAcore.jl")
 include("GAcommon.jl")
@@ -24,6 +24,8 @@ const g2 = s2*g0
 const g3 = s3*g0
 const I4 = g0*g1*g2*g3
 
+basSTA = [g0,g1,g2,g3]
+export basSTA, bar
 
 #Additional function for Pauli operations.Pre and post multiply by g0.
 function bar(a::MVeven)
@@ -36,28 +38,28 @@ end
 
 function mvtype(a::MVeven)
     res=""
-    scl = scp(a)
+    scl = tr(a)
     tp = approxzero(scl) ? "" : " + " * string(scl)
     res *= tp
-    scl = scp(a,s1)
+    scl = dot(a,s1)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "σ1"
     res *= tp
-    scl = scp(a,s2)
+    scl = dot(a,s2)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "σ2"
     res *= tp
-    scl = scp(a,s3)
+    scl = dot(a,s3)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "σ3"
     res *= tp
-    scl = scp(a,-I4*s1)
+    scl = dot(a,-I4*s1)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "Iσ1"
     res *= tp
-    scl = scp(a,-I4*s2)
+    scl = dot(a,-I4*s2)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "Iσ2"
     res *= tp
-    scl = scp(a,-I4*s3)
+    scl = dot(a,-I4*s3)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "Iσ3"
     res *= tp
-    scl = scp(a,-I4)
+    scl = dot(a,-I4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "I"
     res *= tp
     if (length(res) == 0)
@@ -68,34 +70,31 @@ function mvtype(a::MVeven)
     return res
 end
 
-function Base.show(io::IO, mv::MVeven)
-    print(mvtype(mv))
-end
 
 function mvtype(a::MVodd)
     res=""
-    scl = scp(a,g0)
+    scl = dot(a,g0)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "γ0"
     res *= tp
-    scl = scp(a,-g1)
+    scl = dot(a,-g1)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "γ1"
     res *= tp
-    scl = scp(a,-g2)
+    scl = dot(a,-g2)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "γ2"
     res *= tp
-    scl = scp(a,-g3)
+    scl = dot(a,-g3)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "γ3"
     res *= tp
-    scl = scp(a,I4*g0)
+    scl = dot(a,I4*g0)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "Iγ0"
     res *= tp
-    scl = scp(a,-I4*g1)
+    scl = dot(a,-I4*g1)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "Iγ1"
     res *= tp
-    scl = scp(a,-I4*g2)
+    scl = dot(a,-I4*g2)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "Iγ2"
     res *= tp
-    scl = scp(a,-I4*g3)
+    scl = dot(a,-I4*g3)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "Iγ3"
     res *= tp
     if (length(res) == 0)
@@ -106,6 +105,6 @@ function mvtype(a::MVodd)
     return res
 end
 
-function Base.show(io::IO, mv::MVodd)
-    print(mvtype(mv))
-end
+include("GAshow.jl")
+
+end #Module

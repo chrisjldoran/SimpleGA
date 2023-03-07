@@ -57,9 +57,6 @@ function mvtype(a::MVeven)
     return res
 end
 
-function Base.show(io::IO, mv::MVeven)
-    print(mvtype(mv))
-end
 
 function mvtype(a::MVodd)
     res=""
@@ -95,9 +92,6 @@ function mvtype(a::MVodd)
     return res
 end
 
-function Base.show(io::IO, mv::MVodd)
-    print(mvtype(mv))
-end
+include("GAshow.jl")
 
-
-end
+end #Module
