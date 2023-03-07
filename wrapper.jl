@@ -26,8 +26,19 @@ using .GA20
 include("GA30.jl")
 using .GA30
 
-#include("GA40.jl")
-#using .GA40
+include("GA40.jl")
+using .GA40
+
+include("PGA.jl")
+using .PGA
+export pdual
+
+include("CGA.jl")
+using .CGA
+
+include("STA.jl")
+using .STA
+export bar
 
 function basis(alg)
     if alg == "GA20" 
@@ -36,6 +47,12 @@ function basis(alg)
         return bas30
     elseif alg =="GA40"
         return bas40
+    elseif alg =="PGA"
+        return basPGA
+    elseif alg =="CGA"
+        return basCGA
+    elseif alg =="STA"
+        return basSTA
     end
 end
 
