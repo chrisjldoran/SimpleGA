@@ -40,6 +40,13 @@ include("STA.jl")
 using .STA
 export bar
 
+include("GA33.jl")
+using .GA33
+
+include("GA44.jl")
+using .GA44
+export construct44
+
 function basis(alg)
     if alg == "GA20" 
         return bas20
@@ -53,6 +60,10 @@ function basis(alg)
         return basCGA
     elseif alg =="STA"
         return basSTA
+    elseif alg =="GA33"
+        return bas33
+    elseif alg =="GA44"
+        return bas44
     end
 end
 

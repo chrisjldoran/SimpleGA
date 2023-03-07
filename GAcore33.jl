@@ -9,6 +9,12 @@ import Base.:+
 import Base.:-
 import Base.:/
 import Base.exp
+import LinearAlgebra.tr
+import LinearAlgebra.dot
+import LinearAlgebra.adjoint
+import ..project
+import ..expb
+
 
 struct MVeven
     p::SArray{Tuple{4,4},Float64,2,16}
@@ -96,11 +102,11 @@ function /(a::MVodd,num::Number)
 end
 
 #Reverse
-function reverse(a::MVeven)
+function adjoint(a::MVeven)
     MVeven(-J4*transpose(a.m)*J4, -J4*transpose(a.p)*J4 )
 end
 
-function reverse(a::MVodd)
+function adjoint(a::MVodd)
     MVodd(-J4*transpose(a.p)*J4, -J4*transpose(a.m)*J4 )
 end
 
@@ -125,28 +131,28 @@ end
 
 function project(a::MVodd,n::Integer)
     if (n==3)
-        return 0.5*(a - reverse(a))
+        return 0.5*(a - a')
     elseif (n==1)
-        tmp = (a+reverse(a))*e3/2
+        tmp = (a+a')*e3/2
         return (project(tmp,0)+project(tmp,2))*e3
     elseif (n==5)
-        tmp = (a+reverse(a))*e3/2
+        tmp = (a+a')*e3/2
         return (project(tmp,4)+project(tmp,6))*e3
     else
         return MVodd(mzero,mzero)
     end
 end   
 
-function scp(a::MVeven)
+function tr(a::MVeven)
     (tr(a.p)+tr(a.m))/8
 end
 
 #StaticArrays seems to have optimised the trace of a product operation already.
-function scp(a::MVeven, b::MVeven)
+function dot(a::MVeven, b::MVeven)
     (tr(a.p*b.p)+tr(a.m*b.m))/8   
 end
 
-function scp(a::MVodd, b::MVodd)
+function dot(a::MVodd, b::MVodd)
     (tr(a.p*b.m)+tr(a.m*b.p))/8   
 end
 

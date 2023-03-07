@@ -9,6 +9,11 @@ import Base.:+
 import Base.:-
 import Base.:/
 import Base.exp
+import LinearAlgebra.tr
+import LinearAlgebra.dot
+import LinearAlgebra.adjoint
+import ..project
+import ..expb
 
 using SparseArrays
 
@@ -17,13 +22,13 @@ const mvtol = 1e-14
 sparsify(x, eps) = abs(x) < eps ? 0.0 : x
 
 #The Multivector type assumes that the blade list is unique and in order. But we want to avoid checking this at runtime.
-#Only use this constructor if you are certain the blade list is correct. If not, use constructMV()
+#Only use this constructor if you are certain the blade list is correct. If not, use construct44()
 struct Multivector
     bas::Vector{UInt8}
     val::Vector{Float64}
 end
 
-function constructMV(bs,vs)
+function construct44(bs,vs)
     if length(bs) != length(unique(bs))
         error("List of blades must be unique")
     else
@@ -119,7 +124,7 @@ function grd(xin::UInt8)
     return count_ones(xin)
 end
 
-function reverse(mv::Multivector)
+function adjoint(mv::Multivector)
     rsval = similar(mv.val)
     for i in 1:length(mv.bas)
         if isodd(div(grd(mv.bas[i]),2))
@@ -131,9 +136,6 @@ function reverse(mv::Multivector)
     return Multivector(mv.bas,rsval)
 end
 
-function reverse(n::Number)
-    return n
-end
 
 #Grade and projection
 function project(mv::Multivector,n::Int64)
@@ -147,7 +149,7 @@ function project(mv::Multivector,n::Int64)
     return Multivector(rsbas, rsval)
 end
 
-function scp(mv::Multivector)
+function tr(mv::Multivector)
     if mv.bas[1]==0x00
         return mv.val[1]
     else
@@ -155,7 +157,7 @@ function scp(mv::Multivector)
     end
 end
 
-function scp(mv1::Multivector,mv2::Multivector)
+function dot(mv1::Multivector,mv2::Multivector)
     rsbas=intersect(mv1.bas,mv2.bas)
     ln=length(rsbas)
     res=0.0
@@ -172,16 +174,17 @@ end
 
 #Exponentiation
 function exp(a::Multivector)
-    s = ceil(Int,log(2,dot(a.val,a.val)))
+    s = max(ceil(Int,log(2,dot(a.val,a.val)))-1,0)
     a = 1/2^s*a
     res = 1+a
     powa = a
-    for i in 2:13
+    for i in 2:12
         powa *= a/i
         res += powa
     end
-    for i in 1:s
+    while s > 0
         res = res*res
+        s -= 1
     end
     return res
 end
