@@ -1,4 +1,4 @@
-#Attempting to remove namespace issues for scp etc.
+#Each algebra in a separate sub-module.
 
 using LinearAlgebra
 
