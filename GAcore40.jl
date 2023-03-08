@@ -4,13 +4,18 @@ Work using self-dual and anti-self-dual decomposition, so just use a pair of qua
 Useful algebra for projective geometry.
 =#
 
-include("quaternion.jl")
-
 import Base.:*
 import Base.:+
 import Base.:-
 import Base.:/
 import Base.exp
+import LinearAlgebra.tr
+import LinearAlgebra.dot
+import LinearAlgebra.adjoint
+import ..project
+import ..expb
+
+using ..Quaternions
 
 struct MVeven
     qp::Quaternion
@@ -95,22 +100,22 @@ function /(a::MVodd,num::Number)
 end
 
 #Reverse
-function reverse(a::MVeven)
-    MVeven(reverse(a.qp),reverse(a.qm))
+function adjoint(a::MVeven)
+    MVeven(conj(a.qp),conj(a.qm))
 end
 
-function reverse(a::MVodd)
-    MVodd(reverse(a.qm),reverse(a.qp))
+function adjoint(a::MVodd)
+    MVodd(conj(a.qm),conj(a.qp))
 end
 
 #Grade and projection
 function project(a::MVeven,n::Integer)
     if (n==0)
-        return MVeven(0.5*(project(a.qp+a.qm,0)), 0.5*(project(a.qp+a.qm,0)))
+        return MVeven(Quaternion(0.5*(a.qp.w+a.qm.w),0,0,0), Quaternion(0.5*(a.qp.w+a.qm.w),0,0,0))
     elseif (n==2)
-        return MVeven(project(a.qp,2), project(a.qm,2) )
+        return MVeven(imag(a.qp), imag(a.qm))
     elseif (n==4)
-        return MVeven(0.5*(project(a.qp-a.qm,0)), 0.5*(project(-a.qp+a.qm,0)))
+        return MVeven(Quaternion(0.5*(a.qp.w-a.qm.w),0,0,0), Quaternion(0.5*(-a.qp.w+a.qm.w),0,0,0))
     else
         return MVeven(qzero,qzero)
     end
@@ -118,24 +123,24 @@ end
 
 function project(a::MVodd,n::Integer)
     if (n==1)
-        return MVodd(0.5*(a.qp + reverse(a.qm)), 0.5*(a.qm + reverse(a.qp)))
+        return MVodd(0.5*(a.qp + conj(a.qm)), 0.5*(a.qm + conj(a.qp)))
     elseif (n==3)
-        return MVodd(0.5*(a.qp - reverse(a.qm)), 0.5*(a.qm - reverse(a.qp)))
+        return MVodd(0.5*(a.qp - conj(a.qm)), 0.5*(a.qm - conj(a.qp)))
     else
         return MVodd(qzero, qzero)
     end
 end
 
-function scp(a::MVeven)
+function tr(a::MVeven)
     0.5*(a.qp.w + a.qm.w)
 end
 
-function scp(a::MVeven, b::MVeven)
-    0.5*(scp(a.qp,b.qp) + scp(a.qm,b.qm))
+function dot(a::MVeven, b::MVeven)
+    0.5*(dot(a.qp,b.qp) + dot(a.qm,b.qm))
 end
 
-function scp(a::MVodd, b::MVodd)
-    0.5*(scp(a.qp,b.qm) + scp(a.qm,b.qp))
+function dot(a::MVodd, b::MVodd)
+    0.5*(dot(a.qp,b.qm) + dot(a.qm,b.qp))
 end
 
 #Exponentiation

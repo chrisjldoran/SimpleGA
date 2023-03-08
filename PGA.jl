@@ -2,6 +2,8 @@
 Code for GA(3,0,1). The Euclidean group algebra. 
 =#
 
+module PGA
+
 include("PGAcore.jl")
 include("GAcommon.jl")
 import Base.show
@@ -18,12 +20,15 @@ const e3 = MVodd(Quaternion(0, 0, 0, -1.0),qzero)
 const e0 = MVodd(qzero, Quaternion(1.0,0,0,0))
 const I3 = e1*e2*e3
 
+basPGA = [e1,e2,e3, e0]
+export basPGA, pdual
+
 #Additional Functions. Sign conventions agree with De Keninck et al.
-function dual(a::MVeven)
+function pdual(a::MVeven)
     MVeven(-reverse(a.n),-reverse(a.q))
 end
 
-function dual(a::MVodd)
+function pdual(a::MVodd)
     MVodd(-a.n,-a.q)
 end
 
@@ -43,9 +48,6 @@ function mvtype(a::MVeven)
     return res
 end
 
-function Base.show(io::IO, mv::MVeven)
-    print(mvtype(mv))
-end
 
 function mvtype(a::MVodd)
     res=""
@@ -63,6 +65,6 @@ function mvtype(a::MVodd)
     return res
 end
 
-function Base.show(io::IO, mv::MVodd)
-    print(mvtype(mv))
-end
+include("GAshow.jl")
+
+end #Module

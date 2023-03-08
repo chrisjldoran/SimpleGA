@@ -2,6 +2,8 @@
 Code for GA(4,1). 
 =#
 
+module CGA
+
 include("CGAcore.jl")
 include("GAcommon.jl")
 import Base.show
@@ -19,54 +21,57 @@ const e4 = MVodd(qzero,Quaternion(1,0,0,0),Quaternion(1,0,0,0),qzero)
 const f4 = MVodd(qzero,Quaternion(-1,0,0,0),Quaternion(1,0,0,0),qzero)
 const I5 = e1*e2*e3*e4*f4
 
+basCGA = [e1,e2,e3,e4,f4]
+export basCGA
+
 function mvtype(a::MVeven)
     res=""
-    scl = scp(a)
+    scl = tr(a)
     tp = approxzero(scl) ? "" : " + " * string(scl)
     res *= tp
-    scl = scp(a,-e1*e2)
+    scl = dot(a,-e1*e2)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e1e2"
     res *= tp
-    scl = scp(a,-e2*e3)
+    scl = dot(a,-e2*e3)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e2e3"
     res *= tp
-    scl = scp(a,-e3*e1)
+    scl = dot(a,-e3*e1)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e3e1"
     res *= tp
-    scl = scp(a,-e1*e4)
+    scl = dot(a,-e1*e4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e1e4"
     res *= tp
-    scl = scp(a,-e2*e4)
+    scl = dot(a,-e2*e4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e2e4"
     res *= tp
-    scl = scp(a,-e3*e4)
+    scl = dot(a,-e3*e4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e3e4"
     res *= tp
-    scl = scp(a,e1*f4)
+    scl = dot(a,e1*f4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e1f4"
     res *= tp
-    scl = scp(a,e2*f4)
+    scl = dot(a,e2*f4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e2f4"
     res *= tp
-    scl = scp(a,e3*f4)
+    scl = dot(a,e3*f4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e3f4"
     res *= tp
-    scl = scp(a,e4*f4)
+    scl = dot(a,e4*f4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e4f4"
     res *= tp
-    scl = scp(a,-e1*I5)
+    scl = dot(a,-e1*I5)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "I5e1"
     res *= tp
-    scl = scp(a,-e2*I5)
+    scl = dot(a,-e2*I5)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "I5e2"
     res *= tp
-    scl = scp(a,-e3*I5)
+    scl = dot(a,-e3*I5)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "I5e3"
     res *= tp
-    scl = scp(a,-e4*I5)
+    scl = dot(a,-e4*I5)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "I5e4"
     res *= tp
-    scl = scp(a,f4*I5)
+    scl = dot(a,f4*I5)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "I5f4"
     res *= tp
     if (length(res) == 0)
@@ -77,58 +82,55 @@ function mvtype(a::MVeven)
     return res
 end
 
-function Base.show(io::IO, mv::MVeven)
-    print(mvtype(mv))
-end
 
 function mvtype(a::MVodd)
     res=""
-    scl = scp(a,e1)
+    scl = dot(a,e1)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e1"
     res *= tp
-    scl = scp(a,e2)
+    scl = dot(a,e2)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e2"
     res *= tp
-    scl = scp(a,e3)
+    scl = dot(a,e3)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e3"
     res *= tp
-    scl = scp(a,e4)
+    scl = dot(a,e4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e4"
     res *= tp
-    scl = scp(a,-f4)
+    scl = dot(a,-f4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "f4"
     res *= tp
-    scl = scp(a,-e1*e2*e3)
+    scl = dot(a,-e1*e2*e3)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e1e2e3"
     res *= tp
-    scl = scp(a,-e1*e2*e4)
+    scl = dot(a,-e1*e2*e4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e1e2e4"
     res *= tp
-    scl = scp(a,-e1*e3*e4)
+    scl = dot(a,-e1*e3*e4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e1e3e4"
     res *= tp
-    scl = scp(a,-e2*e3*e4)
+    scl = dot(a,-e2*e3*e4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e2e3e4"
     res *= tp
-    scl = scp(a,e1*e2*f4)
+    scl = dot(a,e1*e2*f4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e1e2f4"
     res *= tp
-    scl = scp(a,e1*e3*f4)
+    scl = dot(a,e1*e3*f4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e1e3f4"
     res *= tp
-    scl = scp(a,e2*e3*f4)
+    scl = dot(a,e2*e3*f4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e2e3f4"
     res *= tp
-    scl = scp(a,e1*e4*f4)
+    scl = dot(a,e1*e4*f4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e1e4f4"
     res *= tp
-    scl = scp(a,e2*e4*f4)
+    scl = dot(a,e2*e4*f4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e2e4f4"
     res *= tp
-    scl = scp(a,e3*e4*f4)
+    scl = dot(a,e3*e4*f4)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "e3e4f4"
     res *= tp
-    scl = scp(a,-I5)
+    scl = dot(a,-I5)
     tp = approxzero(scl) ? "" : " + " * string(scl) * "I5"
     res *= tp
     if (length(res) == 0)
@@ -139,6 +141,6 @@ function mvtype(a::MVodd)
     return res
 end
 
-function Base.show(io::IO, mv::MVodd)
-    print(mvtype(mv))
-end
+include("GAshow.jl")
+
+end #Module

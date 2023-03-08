@@ -2,6 +2,8 @@
 Code for GA(3,0). Even and odd elements are stored as quaternions.
 =#
 
+module GA30
+
 include("GAcore30.jl")
 include("GAcommon.jl")
 import Base.show
@@ -10,6 +12,9 @@ const e1 = MVodd(0,1,0,0)
 const e2 = MVodd(0,0,1,0)
 const e3 = MVodd(0,0,0,1)
 const I3 = MVodd(1,0,0,0)
+
+bas30 = [e1,e2,e3]
+export bas30
 
 #Sets tolerance for not displaying results. Does not change the underlying multivector.
 function approxzero(x::Float64)
@@ -53,10 +58,6 @@ function mvtype(a::MVodd)
     return res
 end
 
-function Base.show(io::IO, mv::MVeven)
-    print(mvtype(mv))
-end
+include("GAshow.jl")
 
-function Base.show(io::IO, mv::MVodd)
-    print(mvtype(mv))
 end

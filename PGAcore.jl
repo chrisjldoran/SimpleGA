@@ -5,13 +5,18 @@ Even / odd map performed by I3
 Useful for performance if CGA is too slow.
 =#
 
-include("quaternion.jl")
-
 import Base.:*
 import Base.:+
 import Base.:-
 import Base.:/
 import Base.exp
+import LinearAlgebra.tr
+import LinearAlgebra.dot
+import LinearAlgebra.adjoint
+import ..project
+import ..expb
+
+using ..Quaternions
 
 struct MVeven
     q::Quaternion
@@ -96,22 +101,22 @@ function /(a::MVodd,num::Number)
 end
 
 #Reverse
-function reverse(a::MVeven)
-    MVeven(reverse(a.q),reverse(a.n))
+function adjoint(a::MVeven)
+    MVeven(conj(a.q),conj(a.n))
 end
 
-function reverse(a::MVodd)
-    MVodd(-reverse(a.q),reverse(a.n)  )
+function adjoint(a::MVodd)
+    MVodd(-conj(a.q),conj(a.n))
 end
 
 #Grade and projection
 function project(a::MVeven,n::Integer)
     if (n==0)
-        return MVeven(Quaternion(a.q.w,0,0,0), qzero)
+        return MVeven(real_part(a.q), qzero)
     elseif (n==2)
-        return MVeven(project(a.q,2), project(a.n,2))
+        return MVeven(imag_part(a.q), imag_part(a.n))
     elseif (n==4)
-        return MVeven(qzero, Quaternion(a.n.w,0,0,0))
+        return MVeven(qzero, real_part(a.n))
     else
         return MVeven(qzero,qzero)
     end
@@ -119,34 +124,34 @@ end
 
 function project(a::MVodd,n::Integer)
     if (n==1)
-        return MVodd(project(a.q,2), project(a.n,0))
+        return MVodd(imag_part(a.q), real_part(a.n))
     elseif (n==3)
-        return MVodd(project(a.q,0), project(a.n,2))
+        return MVodd(real_part(a.q), imag_part(a.n))
     else
         return MVodd(qzero, qzero)
     end
 end
 
-function scp(a::MVeven)
+function tr(a::MVeven)
     a.q.w
 end
 
-function scp(a::MVeven, b::MVeven)
-    scp(a.q,b.q)
+function dot(a::MVeven, b::MVeven)
+    dot(a.q,b.q)
 end
 
-function scp(a::MVodd, b::MVodd)
-    -scp(a.q,b.q)
+function dot(a::MVodd, b::MVodd)
+    -dot(a.q,b.q)
 end
 
 #Exponentiation
 function expb(a::MVeven)
     a = project(a,2)
     aa = -a*a
-    if iszero(scp(aa))
+    if iszero(tr(aa))
         return 1+a
     else
-        f0 = sqrt(scp(aa))
+        f0 = sqrt(tr(aa))
         f1 = aa.n.w/2/f0
         cf = MVeven(Quaternion(cos(f0),0,0,0), Quaternion(-f1*sin(f0),0,0,0))
         sncf = MVeven(Quaternion(sin(f0)/f0,0,0,0),  Quaternion(f1/f0^2*(f0*cos(f0) - sin(f0)),0,0,0))

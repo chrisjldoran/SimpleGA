@@ -1,6 +1,10 @@
 #= 
 Code for GA(4,4)
 =#
+
+
+module GA44
+
 using LinearAlgebra
 
 include("GA44Core.jl")
@@ -34,6 +38,8 @@ const f2 = Multivector([parse(UInt8, "00001011", base=2)],[1.0])
 const f3 = Multivector([parse(UInt8, "00101111", base=2)],[1.0])
 const f4 = Multivector([parse(UInt8, "10111111", base=2)],[1.0])
 
+bas44 = [e1,e2,e3,e4,f1,f2,f3,f4]
+export bas44, construct44
 
 #Additional functions
 
@@ -109,10 +115,15 @@ function Base.show(io::IO, mv::Multivector)
     print(mvtype(mv))
 end
 
-function Base.show(io::IO, ::MIME"text/plain", mvl::Array{Multivector,1})
-    println("Array of multivectors")
-    for i in eachindex(mvl)
-        println(mvtype(mvl[i]))
+
+function Base.show(io::IO, ::MIME"text/plain", mvs::Vector{Multivector})
+    n= length(mvs)
+    println(io,n,"-element Vector{Multivector}")
+    for i in eachindex(mvs)
+    println(io, " ", mvtype(mvs[i]))
     end
 end
 
+
+
+end #Module

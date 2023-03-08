@@ -2,6 +2,8 @@
 Code for GA(3,3). 
 =#
 
+module GA33
+
 using LinearAlgebra
 using StaticArrays
 
@@ -40,17 +42,20 @@ const f3 = MVodd(
 )
 E6 = f1*e1*f2*e2*f3*e3
 
+bas33 = [e1,e2,e3,f1,f2,f3]
+export bas33
+
 #Arrays to simplify MVtype code
 
 function mvtype(a::MVeven)
-    scl = scp(a)
+    scl = tr(a)
     res = approxzero(scl) ? "" : " + " * string(scl)
     tpevenbas = [-e1*e2, -e1*e3, -e2*e3, -f1*f2, -f1*f3, -f2*f3, e1*f1, e1*f2, e1*f3, e2*f1, e2*f2, e2*f3, e3*f1, e3*f2, e3*f3,
     -e1*e2*E6, -e1*e3*E6, -e2*e3*E6, -f1*f2*E6, -f1*f3*E6, -f2*f3*E6, e1*f1*E6, e1*f2*E6, e1*f3*E6,e2*f1*E6, e2*f2*E6, e2*f3*E6, e3*f1*E6, e3*f2*E6, e3*f3*E6,E6]
     tpevenstr = ["e1e2", "e1e3", "e2e3", "f1f2", "f1f3", "f2f3", "e1f1", "e1f2", "e1f3", "e2f1", "e2f2", "e2f3", "e3f1", "e3f2", "e3f3",
     "e1e2E6", "e1e3E6", "e2e3E6", "f1f2E6", "f1f3E6", "f2f3E6", "e1f1E6", "e1f2E6", "e1f3E6", "e2f1E6", "e2f2E6", "e2f3E6", "e3f1E6", "e3f2E6", "e3f3E6","E6"]
     for i in 1:31
-        scl = scp(a,tpevenbas[i])
+        scl = dot(a,tpevenbas[i])
         tp = approxzero(scl) ? "" : " + " * string(scl) * tpevenstr[i]
         res *= tp
     end
@@ -62,9 +67,7 @@ function mvtype(a::MVeven)
     return res
 end
 
-function Base.show(io::IO, mv::MVeven)
-    print(mvtype(mv))
-end
+
 
 function mvtype(a::MVodd)
     tpoddbas = [e1, e2, e3, -f1, -f2, -f3, -e1*e2*e3, 
@@ -77,7 +80,7 @@ function mvtype(a::MVodd)
     "f1f2f3", "e1E6", "e2E6", "e3E6", "f1E6", "f2E6", "f3E6"]
     res=""
     for i in 1:32
-        scl = scp(a,tpoddbas[i])
+        scl = dot(a,tpoddbas[i])
         tp = approxzero(scl) ? "" : " + " * string(scl) * tpoddstr[i]
         res *= tp
     end
@@ -89,8 +92,6 @@ function mvtype(a::MVodd)
     return res
 end
 
-function Base.show(io::IO, mv::MVodd)
-    print(mvtype(mv))
-end
-
-    
+include("GAshow.jl")
+  
+end #Module

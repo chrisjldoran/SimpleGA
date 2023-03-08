@@ -11,12 +11,22 @@ import Base.:+
 import Base.:-
 import Base.:/
 import Base.exp
+import Base.real
+import Base.conj
+import LinearAlgebra.norm
+import LinearAlgebra.dot
+import Base.show
+
 
 struct Quaternion
     w::Float64
     x::Float64
     y::Float64
     z::Float64
+end
+
+function quat(w,x,y,z)
+    Quaternion(w,x,y,z)
 end
 
 const qzero = Quaternion(0,0,0,0)
@@ -73,37 +83,40 @@ function /(a::Quaternion,num::Number)
 end
 
 function /(a::Quaternion,b::Quaternion)
-    a*reverse(b) / scp(b,reverse(b))
+    a*conj(b) / dot(b,conj(b))
+end
+
+function norm(a::Quaternion)
+    return sqrt(a.w^2+a.x^2+a.y^2+a.z^2)
 end
 
 #Reverse
-function reverse(a::Quaternion)
+function conj(a::Quaternion)
     Quaternion(a.w,-a.x, -a.y, -a.z)
 end
 
 #Projection operations
-function scp(a::Quaternion)
-    a.w
-end
-
-function scp(a::Quaternion, b::Quaternion)
+function dot(a::Quaternion, b::Quaternion)
     a.w*b.w - a.x*b.x - a.y*b.y - a.z*b.z
 end
 
-function project(a::Quaternion, n::Integer)
-    if (n==0)
-        return Quaternion(a.w,0,0,0)
-    elseif (n==2)
-        return Quaternion(0,a.x,a.y,a.z)
-    else
-        return qzero
-    end
+function real(a::Quaternion)
+    a.w
 end
+
+function real_part(a::Quaternion)
+    Quaternion(a.w,0,0,0)
+end
+
+function imag_part(a::Quaternion)
+    Quaternion(0,a.x,a.y,a.z)
+end
+
 
 #Exponentiation
 function expb(a::Quaternion)
-    a = project(a,2)
-    nrm = sqrt(scp(a,-a))
+    a = imag_part(a)
+    nrm = norm(a)
     if iszero(nrm)
         return Quaternion(one(nrm),0,0,0)
     else
@@ -120,3 +133,6 @@ function exp(a::Quaternion)
     end
 end
 
+function Base.show(io::IO, a::Quaternion)
+    print(string(a.w) * " + " * string(a.x) * "i + " * string(a.y) * "j + " * string(a.z) * "k")
+end

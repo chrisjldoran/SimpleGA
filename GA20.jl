@@ -1,6 +1,7 @@
 #=
 Code for GA(2,0). Even and odd elements are stored as complex numbers.
 =#
+module GA20
 
 include("GAcore20.jl")
 include("GAcommon.jl")
@@ -14,6 +15,9 @@ import Base.imag
 const e1 = MVodd(1)
 const e2 = MVodd(im)
 const I2 = MVeven(im)
+
+bas20 = [e1,e2]
+export bas20
 
 
 #Sets tolerance for not displaying results. 
@@ -64,10 +68,6 @@ function mvtype(a::MVodd)
     return res
 end
 
-function Base.show(io::IO, mv::MVeven)
-    print(mvtype(mv))
-end
+include("GAshow.jl")
 
-function Base.show(io::IO, mv::MVodd)
-    print(mvtype(mv))
 end
