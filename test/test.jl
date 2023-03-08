@@ -105,6 +105,14 @@ me1*(mo2+mo3) - me1*mo2 - me1*mo3
 mo1*(mo2+mo3) - mo1*mo2 - mo1*mo3
 
 #Associativity
+me1*(me2*me3) - (me1*me2)*me3
+mo1*(me2*me3) - (mo1*me2)*me3
+me1*(mo2*me3) - (me1*mo2)*me3
+me1*(me2*mo3) - (me1*me2)*mo3
+mo1*(mo2*me3) - (mo1*mo2)*me3
+mo1*(me2*mo3) - (mo1*me2)*mo3
+me1*(mo2*mo3) - (me1*mo2)*mo3
+mo1*(mo2*mo3) - (mo1*mo2)*mo3
 
 
 #Rotation

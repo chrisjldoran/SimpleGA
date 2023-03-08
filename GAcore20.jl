@@ -149,5 +149,7 @@ function expb(a::MVeven)
     MVeven(exp(im*a.c1.im))
 end
 
+#Not very elegant, but multiple dispatch does not work with kwargs.
 Base.isapprox(a::MVeven, b::MVeven) = isapprox(a.c1,b.c1; atol=eps(Float64)) 
 Base.isapprox(a::MVodd, b::MVodd) = isapprox(a.c1,b.c1; atol=eps(Float64)) 
+
