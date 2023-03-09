@@ -67,7 +67,8 @@ function basis(alg)
     end
 end
 
-
+include("embed.jl")
+export embed
 
 
 end #module

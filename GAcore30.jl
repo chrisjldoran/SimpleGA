@@ -175,3 +175,22 @@ function exp(a::MVeven)
     end
 end
 
+#Comparison
+#Not very elegant, but multiple dispatch does not work with kwargs.
+function Base.isapprox(a::MVeven, b::MVeven, tol)
+    res = isapprox(a.w,b.w; atol=tol) && isapprox(a.x,b.x; atol=tol) 
+    res = res && isapprox(a.y,b.y; atol=tol) 
+    res = res && isapprox(a.z,b.z; atol=tol) 
+    return res
+end
+
+Base.isapprox(a::MVeven, b::MVeven) = isapprox(a,b,10*eps(Float64))
+
+function Base.isapprox(a::MVodd, b::MVodd, tol)
+    res = isapprox(a.w,b.w; atol=tol) && isapprox(a.x,b.x; atol=tol) 
+    res = res && isapprox(a.y,b.y; atol=tol) 
+    res = res && isapprox(a.z,b.z; atol=tol) 
+    return res
+end
+
+Base.isapprox(a::MVodd, b::MVodd) = isapprox(a,b,10*eps(Float64))

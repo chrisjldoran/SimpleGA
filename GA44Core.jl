@@ -192,3 +192,15 @@ end
 function expb(a::Multivector)
     return exp(project(a,2))
 end
+
+#Comparison
+function Base.isapprox(a::Multivector, b::Multivector, tol)
+    c = a-b
+    res = true
+    for x in c.val
+        res = res && isapprox(x,0.0;atol=tol)
+    end
+    return res
+end
+
+Base.isapprox(a::Multivector, b::Multivector) = Base.isapprox(a,b,eps(Float64))

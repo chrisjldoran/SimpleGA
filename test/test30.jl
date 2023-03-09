@@ -1,15 +1,17 @@
-#Test suite for GA 20.
+#Test suite for GA 30.
 #Test stand-alone results and compares with GA(4,4)
 
-bas20 = basis("GA20")
-e1 = bas20[1]
-e2 = bas20[2]
-me1 = rand() + rand()*e1*e2 
-me2 = rand() + rand()*e1*e2 
-me3 = rand() + rand()*e1*e2 
-mo1 = rand()*e1 + rand()*e2
-mo2 = rand()*e1 + rand()*e2 
-mo3 = rand()*e1 + rand()*e2 
+bas30 = basis("GA30")
+e1 = bas30[1]
+e2 = bas30[2]
+e3 = bas30[3]
+me1 = rand() + rand()*e1*e2 + e1*e3*rand() + e3*rand()*e2
+me2 = rand() + rand()*e1*e2 + e1*e3*rand() + e3*rand()*e2
+me3 = rand() + rand()*e1*e2 + e1*e3*rand() + e3*rand()*e2
+mo1 = rand()*e1 + rand()*e2 + e3*rand() + e3*rand()*e2*e1
+mo2 = rand()*e1 + rand()*e2 + e3*rand() + e3*rand()*e2*e1
+mo3 = rand()*e1 + rand()*e2 + e3*rand() + e3*rand()*e2*e1
+
 
 #Distributivity
 @test isapprox(me1*(me2+me3), me1*me2 + me1*me3)
@@ -41,15 +43,16 @@ f2 = me1*e2*me1'
 bas44 = basis("GA44")
 E1 = bas44[1]
 E2 = bas44[2]
-arr1 = rand(2)
-v1 = inject(arr1,bas20)
-V1 = inject(arr1,[E1,E2])
-arr2 = rand(2)
-v2 = inject(arr2,bas20)
-V2 = inject(arr2,[E1,E2])
-arr3 = rand(2)
-v3 = inject(arr3,bas20)
-V3 = inject(arr3,[E1,E2])
+E3 = bas44[3]
+arr1 = rand(3)
+v1 = inject(arr1,bas30)
+V1 = inject(arr1,[E1,E2,E3])
+arr2 = rand(3)
+v2 = inject(arr2,bas30)
+V2 = inject(arr2,[E1,E2,E3])
+arr3 = rand(3)
+v3 = inject(arr3,bas30)
+V3 = inject(arr3,[E1,E2,E3])
 @test isapprox(dot(v1,v1),dot(V1,V1); atol=eps(Float64))
 @test isapprox(dot(v1*v2*v3,e1), dot(V1*V2*V3,E1); atol=eps(Float64))
 @test isapprox(dot(v1*v2*v3,e2), dot(V1*V2*V3,E2); atol=eps(Float64))
