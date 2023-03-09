@@ -8,6 +8,6 @@ using .GA
 
 @testset "GA Tests" begin
     include("test20.jl")
-    @test 1==1
+    include("test30.jl")
 end
 

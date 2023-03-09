@@ -113,7 +113,7 @@ function project(a::MVeven,n::Integer)
     if (n==0)
         return MVeven(Quaternion(0.5*(a.qp.w+a.qm.w),0,0,0), Quaternion(0.5*(a.qp.w+a.qm.w),0,0,0))
     elseif (n==2)
-        return MVeven(imag(a.qp), imag(a.qm))
+        return MVeven(imag_part(a.qp), imag_part(a.qm))
     elseif (n==4)
         return MVeven(Quaternion(0.5*(a.qp.w-a.qm.w),0,0,0), Quaternion(0.5*(-a.qp.w+a.qm.w),0,0,0))
     else
@@ -151,3 +151,10 @@ end
 function exp(a::MVeven)
     return MVeven(exp(a.qp), exp(a.qm))
 end
+
+#Comparison
+Base.isapprox(a::MVeven, b::MVeven, tol) = isapprox(a.qp,b.qp,tol) && isapprox(a.qm, b.qm, tol) 
+Base.isapprox(a::MVeven, b::MVeven) = isapprox(a,b,32*eps(Float64))
+
+Base.isapprox(a::MVodd, b::MVodd, tol) = isapprox(a.qp,b.qp,tol) && isapprox(a.qm, b.qm, tol) 
+Base.isapprox(a::MVodd, b::MVodd) = isapprox(a,b,32*eps(Float64))

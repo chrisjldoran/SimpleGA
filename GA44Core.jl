@@ -45,7 +45,7 @@ end
 
 
 function +(mv1::Multivector, mv2::Multivector)
-    res = SparseVector(64,mv1.bas .+ 1, mv1.val) + SparseVector(64,mv2.bas .+ 1, mv2.val)
+    res = SparseVector(256,mv1.bas .+ 1, mv1.val) + SparseVector(256,mv2.bas .+ 1, mv2.val)
     sps = sparse(sparsify.(res,mvtol))
     return Multivector(sps.nzind .- 1,sps.nzval)
 end
@@ -82,7 +82,7 @@ end
 
 
 function *(mv1::Multivector,mv2::Multivector)
-    res = zeros(Float64,64)
+    res = zeros(Float64,256)
     for i in 1:length(mv1.bas)
         for j in 1:length(mv2.bas)
             res[xor(mv1.bas[i],mv2.bas[j])+1] += gaprodsign(mv1.bas[i],mv2.bas[j])*mv1.val[i]*mv2.val[j]
@@ -203,4 +203,4 @@ function Base.isapprox(a::Multivector, b::Multivector, tol)
     return res
 end
 
-Base.isapprox(a::Multivector, b::Multivector) = Base.isapprox(a,b,eps(Float64))
+Base.isapprox(a::Multivector, b::Multivector) = Base.isapprox(a,b,32*eps(Float64))

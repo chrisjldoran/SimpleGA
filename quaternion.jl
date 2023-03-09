@@ -133,6 +133,27 @@ function exp(a::Quaternion)
     end
 end
 
+
+#Additional Functions
+function Base.isapprox(a::Quaternion, b::Quaternion, tol)
+    res = isapprox(a.w,b.w; atol=tol) && isapprox(a.x,b.x; atol=tol) 
+    res = res && isapprox(a.y,b.y; atol=tol) 
+    res = res && isapprox(a.z,b.z; atol=tol) 
+    return res
+end
+
+
+Base.isapprox(a::Quaternion, b::Quaternion) = isapprox(a,b,10*eps(Float64))
+
 function Base.show(io::IO, a::Quaternion)
     print(string(a.w) * " + " * string(a.x) * "i + " * string(a.y) * "j + " * string(a.z) * "k")
+end
+
+
+function Base.show(io::IO, ::MIME"text/plain", mvs::Vector{Quaternion})
+    n= length(mvs)
+    println(io,n,"-element Vector{Quaternion}")
+    for i in eachindex(mvs)
+    println(io, " ", mvs[i])
+    end
 end

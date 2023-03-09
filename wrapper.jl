@@ -11,6 +11,9 @@ end #module
 
 module GA
 
+import LinearAlgebra.tr
+import LinearAlgebra.dot
+
 using ..Quaternions
 export project, expb, inject, basis
 
