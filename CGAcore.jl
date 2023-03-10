@@ -135,7 +135,7 @@ function project(a::MVeven,n::Integer)
         return MVeven(stmp+qtmp, imag_part(a.q2), imag_part(a.q3), -stmp+ qtmp )
     elseif (n==4)
         qtmp = imag_part(0.5*(a.q1-a.q4))
-        return MVeven(qtmp, imag_part(a.q2), real_part(a.q3), -qtmp )
+        return MVeven(qtmp, real_part(a.q2), real_part(a.q3), -qtmp )
     else
         return MVeven(qzero,qzero,qzero,qzero)
     end
@@ -193,5 +193,13 @@ function expb(a::MVeven)
     a = project(a,2)
     R = exp(a)
     delt = R*R'-1
-    return (1-0.5*delt + 0.125*delt*delt)*R
+    return (1-0.5*delt + 0.375*delt*delt)*R
 end  
+
+
+#Comparison
+Base.isapprox(a::MVeven, b::MVeven, tol) = isapprox(a.q1,b.q1,tol) && isapprox(a.q2, b.q2, tol) && isapprox(a.q3,b.q3,tol) && isapprox(a.q4, b.q4, tol ) 
+Base.isapprox(a::MVeven, b::MVeven) = isapprox(a,b,1e-12)
+
+Base.isapprox(a::MVodd, b::MVodd, tol) = isapprox(a.q1,b.q1,tol) && isapprox(a.q2, b.q2, tol) && isapprox(a.q3,b.q3,tol) && isapprox(a.q4, b.q4, tol ) 
+Base.isapprox(a::MVodd, b::MVodd) = isapprox(a,b,21e-12)

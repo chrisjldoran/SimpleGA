@@ -117,10 +117,10 @@ function project(a::MVeven,n::Integer)
         return MVeven(scl*id4,scl*id4)
     elseif (n==2)
         scl = (tr(a.p)-tr(a.m))/8
-        return 0.5*(a - reverse(a)) - MVeven(scl*id4,-scl*id4)
+        return 0.5*(a - a') - MVeven(scl*id4,-scl*id4)
     elseif (n==4)
         scl = (tr(a.p)+tr(a.m))/8
-        return 0.5*(reverse(a) + a) - MVeven(scl*id4,scl*id4)
+        return 0.5*(a+a') - MVeven(scl*id4,scl*id4)
     elseif (n == 6)
         scl = (tr(a.p)-tr(a.m))/8
         return MVeven(scl*id4,-scl*id4)
@@ -166,5 +166,13 @@ end
 function expb(a::MVeven)
     a = project(a,2)
     R = exp(a)
-    return R - 0.5*(R*reverse(R)-1)*R
+    delt = R*R'-1
+    return (1-0.5*delt + 0.375*delt*delt)*R
 end
+
+#Comparison
+#StaticArrays does seem to lose some accuracy.
+Base.isapprox(a::MVeven, b::MVeven, tol) = isapprox(a.p,b.p;atol=tol) && isapprox(a.m,b.m;atol=tol)
+Base.isapprox(a::MVeven, b::MVeven) = isapprox(a,b,1e-11)
+Base.isapprox(a::MVodd, b::MVodd, tol) = isapprox(a.p,b.p;atol=tol) && isapprox(a.m,b.m;atol=tol)
+Base.isapprox(a::MVodd, b::MVodd) = isapprox(a,b,1e-11)

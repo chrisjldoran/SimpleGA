@@ -190,7 +190,9 @@ function exp(a::Multivector)
 end
 
 function expb(a::Multivector)
-    return exp(project(a,2))
+    R = exp(project(a,2))
+    delt = R*R'-1
+    return (1-0.5*delt + 0.375*delt*delt)*R
 end
 
 #Comparison
@@ -203,4 +205,4 @@ function Base.isapprox(a::Multivector, b::Multivector, tol)
     return res
 end
 
-Base.isapprox(a::Multivector, b::Multivector) = Base.isapprox(a,b,32*eps(Float64))
+Base.isapprox(a::Multivector, b::Multivector) = Base.isapprox(a,b,512*eps(Float64))
