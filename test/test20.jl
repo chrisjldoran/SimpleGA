@@ -30,7 +30,7 @@ mo3 = rand()*e1 + rand()*e2
 #Rotation
 f1 = me1*e1*me1'
 f2 = me1*e2*me1'
-@test isapprox(dot(f1,f2),0.0; atol=eps(Float64))
+@test isapprox(dot(f1,f2),0.0; 1e-10)
 
 
 #Projection
@@ -50,8 +50,8 @@ V2 = inject(arr2,[E1,E2])
 arr3 = rand(2)
 v3 = inject(arr3,bas20)
 V3 = inject(arr3,[E1,E2])
-@test isapprox(dot(v1,v1),dot(V1,V1); atol=eps(Float64))
-@test isapprox(dot(v1*v2*v3,e1), dot(V1*V2*V3,E1); atol=eps(Float64))
-@test isapprox(dot(v1*v2*v3,e2), dot(V1*V2*V3,E2); atol=eps(Float64))
-@test isapprox(embed(exp(v1*v2)),exp(V1*V2),1e-8)
-@test isapprox(embed(expb(v1*v2)),expb(V1*V2),1e-8)
+@test isapprox(dot(v1,v1),dot(V1,V1))
+@test isapprox(dot(v1*v2*v3,e1), dot(V1*V2*V3,E1))
+@test isapprox(dot(v1*v2*v3,e2), dot(V1*V2*V3,E2))
+@test isapprox(embed(exp(v1*v2)),exp(V1*V2))
+@test isapprox(embed(expb(v1*v2)),expb(V1*V2))

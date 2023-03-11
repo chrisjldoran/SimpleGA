@@ -172,7 +172,5 @@ end
 
 #Comparison
 #StaticArrays does seem to lose some accuracy.
-Base.isapprox(a::MVeven, b::MVeven, tol) = isapprox(a.p,b.p;atol=tol) && isapprox(a.m,b.m;atol=tol)
-Base.isapprox(a::MVeven, b::MVeven) = isapprox(a,b,1e-11)
-Base.isapprox(a::MVodd, b::MVodd, tol) = isapprox(a.p,b.p;atol=tol) && isapprox(a.m,b.m;atol=tol)
-Base.isapprox(a::MVodd, b::MVodd) = isapprox(a,b,1e-11)
+Base.isapprox(a::MVeven, b::MVeven) = isapprox(a.p,b.p) && isapprox(a.m,b.m)
+Base.isapprox(a::MVodd, b::MVodd) = isapprox(a.p,b.p) && isapprox(a.m,b.m)

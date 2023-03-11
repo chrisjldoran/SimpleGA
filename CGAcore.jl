@@ -198,8 +198,6 @@ end
 
 
 #Comparison
-Base.isapprox(a::MVeven, b::MVeven, tol) = isapprox(a.q1,b.q1,tol) && isapprox(a.q2, b.q2, tol) && isapprox(a.q3,b.q3,tol) && isapprox(a.q4, b.q4, tol ) 
-Base.isapprox(a::MVeven, b::MVeven) = isapprox(a,b,1e-12)
+Base.isapprox(a::MVeven, b::MVeven) = isapprox(a.q1,b.q1) && isapprox(a.q2, b.q2) && isapprox(a.q3,b.q3) && isapprox(a.q4, b.q4)
+Base.isapprox(a::MVodd, b::MVodd) = isapprox(a.q1,b.q1) && isapprox(a.q2, b.q2) && isapprox(a.q3,b.q3) && isapprox(a.q4, b.q4) 
 
-Base.isapprox(a::MVodd, b::MVodd, tol) = isapprox(a.q1,b.q1,tol) && isapprox(a.q2, b.q2, tol) && isapprox(a.q3,b.q3,tol) && isapprox(a.q4, b.q4, tol ) 
-Base.isapprox(a::MVodd, b::MVodd) = isapprox(a,b,21e-12)

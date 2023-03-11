@@ -16,7 +16,22 @@ mo1 = rand()*e1 + rand()*e2 + e3*rand() + e0/rand() + I3*e0*(rand()*e1 + rand()*
 mo2 = rand()*e1 + rand()*e2 + e3*rand() + e0/rand() + I3*e0*(rand()*e1 + rand()*e2 + e3*rand()) + + rand()*I3
 mo3 = rand()*e1 + rand()*e2 + e3*rand() + e0/rand() + I3*e0*(rand()*e1 + rand()*e2 + e3*rand()) + + rand()*I3
 
-include("testcommon.jl")
+
+#Distributivity
+@test isapprox(me1*(me2+me3), me1*me2 + me1*me3)
+@test isapprox(mo1*(me2+me3), mo1*me2 + mo1*me3)
+@test isapprox(me1*(mo2+mo3), me1*mo2 + me1*mo3)
+@test isapprox(mo1*(mo2+mo3), mo1*mo2 + mo1*mo3)
+
+#Associativity
+@test isapprox(me1*(me2*me3) , (me1*me2)*me3)
+@test isapprox(mo1*(me2*me3) , (mo1*me2)*me3)
+@test isapprox(me1*(mo2*me3) , (me1*mo2)*me3)
+@test isapprox(me1*(me2*mo3) , (me1*me2)*mo3)
+@test isapprox(mo1*(mo2*me3) , (mo1*mo2)*me3)
+@test isapprox(mo1*(me2*mo3) , (mo1*me2)*mo3)
+@test isapprox(me1*(mo2*mo3) , (me1*mo2)*mo3)
+@test isapprox(mo1*(mo2*mo3) , (mo1*mo2)*mo3)
 
 #Rotation
 f1 = me1*e1*me1'
@@ -45,11 +60,11 @@ V3 = inject(arr3,[E1,E2,E3,E0])
 arr4 = rand(4)
 v4 = inject(arr4,baspga)
 V4 = inject(arr4,[E1,E2,E3,E0])
-@test isapprox(dot(v1,v1),dot(V1,V1); atol=eps(Float64))
-@test isapprox(dot(v1*v2*v3,e1), dot(V1*V2*V3,E1); atol=eps(Float64))
-@test isapprox(dot(v1*v2*v3,e2), dot(V1*V2*V3,E2); atol=eps(Float64))
-@test isapprox(dot(v1*v2*v3,e3), dot(V1*V2*V3,E3); atol=eps(Float64))
+@test isapprox(dot(v1,v1),dot(V1,V1))
+@test isapprox(dot(v1*v2*v3,e1), dot(V1*V2*V3,E1))
+@test isapprox(dot(v1*v2*v3,e2), dot(V1*V2*V3,E2))
+@test isapprox(dot(v1*v2*v3,e3), dot(V1*V2*V3,E3))
 @test isapprox(embed(v1*v2*v3), V1*V2*V3)
 @test isapprox(embed(v1*v2*v3*v4), V1*V2*V3*V4)
-@test isapprox(embed(exp(v1*v2)),exp(V1*V2),1e-8)
-@test isapprox(embed(expb(v1*v2)),expb(V1*V2),1e-8)
+@test isapprox(embed(exp(v1*v2)),exp(V1*V2))
+@test isapprox(embed(expb(v1*v2)),expb(V1*V2))

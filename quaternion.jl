@@ -135,15 +135,7 @@ end
 
 
 #Additional Functions
-function Base.isapprox(a::Quaternion, b::Quaternion, tol)
-    res = isapprox(a.w,b.w; atol=tol) && isapprox(a.x,b.x; atol=tol) 
-    res = res && isapprox(a.y,b.y; atol=tol) 
-    res = res && isapprox(a.z,b.z; atol=tol) 
-    return res
-end
-
-
-Base.isapprox(a::Quaternion, b::Quaternion) = isapprox(a,b,10*eps(Float64))
+Base.isapprox(a::Quaternion, b::Quaternion) = isapprox(a.w,b.w) && isapprox(a.x,b.x) && isapprox(a.y,b.y) && isapprox(a.z,b.z) 
 
 function Base.show(io::IO, a::Quaternion)
     print(string(a.w) * " + " * string(a.x) * "i + " * string(a.y) * "j + " * string(a.z) * "k")

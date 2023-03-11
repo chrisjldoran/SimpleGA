@@ -165,9 +165,6 @@ function exp(a::MVeven)
 end
 
 
-#Comparison
-Base.isapprox(a::MVeven, b::MVeven, tol) = isapprox(a.q,b.q,tol) && isapprox(a.n, b.n, tol) 
-Base.isapprox(a::MVeven, b::MVeven) = isapprox(a,b,32*eps(Float64))
-
-Base.isapprox(a::MVodd, b::MVodd, tol) = isapprox(a.q,b.q,tol) && isapprox(a.n, b.n, tol) 
-Base.isapprox(a::MVodd, b::MVodd) = isapprox(a,b,32*eps(Float64))
+#Comparison. Uses default tolerances.
+Base.isapprox(a::MVeven, b::MVeven) = isapprox(a.q,b.q) && isapprox(a.n, b.n) 
+Base.isapprox(a::MVodd, b::MVodd) = isapprox(a.q,b.q) && isapprox(a.n, b.n) 

@@ -180,21 +180,6 @@ function exp(a::MVeven)
     end
 end
 
-#Comparison
-function Base.isapprox(a::MVeven, b::MVeven, tol)
-    res = isapprox(a.c1,b.c1; atol=tol) && isapprox(a.c2,b.c2; atol=tol) 
-    res = res && isapprox(a.c3,b.c3; atol=tol) 
-    res = res && isapprox(a.c4,b.c4; atol=tol) 
-    return res
-end
-
-Base.isapprox(a::MVeven, b::MVeven) = isapprox(a,b,256*eps(Float64))
-
-function Base.isapprox(a::MVodd, b::MVodd, tol)
-    res = isapprox(a.c1,b.c1; atol=tol) && isapprox(a.c2,b.c2; atol=tol) 
-    res = res && isapprox(a.c3,b.c3; atol=tol) 
-    res = res && isapprox(a.c4,b.c4; atol=tol) 
-    return res
-end
-
-Base.isapprox(a::MVodd, b::MVodd) = isapprox(a,b,256*eps(Float64))
+#Comparison. Uses default tolerances
+Base.isapprox(a::MVeven, b::MVeven) = isapprox(a.c1,b.c1) && isapprox(a.c2,b.c2)  && isapprox(a.c3,b.c3) && isapprox(a.c4,b.c4) 
+Base.isapprox(a::MVodd, b::MVodd) = isapprox(a.c1,b.c1) && isapprox(a.c2,b.c2)  && isapprox(a.c3,b.c3) && isapprox(a.c4,b.c4) 

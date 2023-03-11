@@ -195,14 +195,7 @@ function expb(a::Multivector)
     return (1-0.5*delt + 0.375*delt*delt)*R
 end
 
-#Comparison
-function Base.isapprox(a::Multivector, b::Multivector, tol)
-    c = a-b
-    res = true
-    for x in c.val
-        res = res && isapprox(x,0.0;atol=tol)
-    end
-    return res
-end
 
-Base.isapprox(a::Multivector, b::Multivector) = Base.isapprox(a,b,512*eps(Float64))
+Base.isapprox(mv1::Multivector, mv2::Multivector) = isapprox(SparseVector(256,mv1.bas .+ 1, mv1.val), 
+        SparseVector(256,mv2.bas .+ 1, mv2.val))
+

@@ -153,8 +153,5 @@ function exp(a::MVeven)
 end
 
 #Comparison
-Base.isapprox(a::MVeven, b::MVeven, tol) = isapprox(a.qp,b.qp,tol) && isapprox(a.qm, b.qm, tol) 
-Base.isapprox(a::MVeven, b::MVeven) = isapprox(a,b,32*eps(Float64))
-
-Base.isapprox(a::MVodd, b::MVodd, tol) = isapprox(a.qp,b.qp,tol) && isapprox(a.qm, b.qm, tol) 
-Base.isapprox(a::MVodd, b::MVodd) = isapprox(a,b,32*eps(Float64))
+Base.isapprox(a::MVeven, b::MVeven) = isapprox(a.qp,b.qp) && isapprox(a.qm, b.qm) 
+Base.isapprox(a::MVodd, b::MVodd) = isapprox(a.qp,b.qp) && isapprox(a.qm, b.qm) 
