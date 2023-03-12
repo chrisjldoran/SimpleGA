@@ -40,8 +40,9 @@ mo3 = v8*v9*v10*v4*v5*v6*v7
 @test isapprox(me1  , project(me1,0) + project(me1,2) + project(me1,4) + project(me1,6) + project(me1,8))
 @test isapprox(mo1  , project(mo1,1) + project(mo1,3) + project(mo1,5) + project(mo1,7))
 
+
 #Rotation
 R = expb(v1*v2)
-g1 = R* v1 *R'
-g2 = R* v2 *R'
-@test isapprox(dot(g1,g2),dot(v1,v2); atol=1e-10)
+no1 = R*mo1*R'
+no2 = R*mo2*R'
+@test isapprox(dot(mo1,mo2),dot(no1,no2))

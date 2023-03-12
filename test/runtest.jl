@@ -14,6 +14,7 @@ using .GA
     include("testSTA.jl")
     include("testCGA.jl")
     include("test33.jl")
+    include("test24.jl")
     include("test44.jl")
 end
 

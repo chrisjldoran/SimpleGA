@@ -17,31 +17,6 @@ mo2 = rand()*e1 + rand()*e2 + e3*rand() + e0/rand() + I3*e0*(rand()*e1 + rand()*
 mo3 = rand()*e1 + rand()*e2 + e3*rand() + e0/rand() + I3*e0*(rand()*e1 + rand()*e2 + e3*rand()) + + rand()*I3
 
 
-#Distributivity
-@test isapprox(me1*(me2+me3), me1*me2 + me1*me3)
-@test isapprox(mo1*(me2+me3), mo1*me2 + mo1*me3)
-@test isapprox(me1*(mo2+mo3), me1*mo2 + me1*mo3)
-@test isapprox(mo1*(mo2+mo3), mo1*mo2 + mo1*mo3)
-
-#Associativity
-@test isapprox(me1*(me2*me3) , (me1*me2)*me3)
-@test isapprox(mo1*(me2*me3) , (mo1*me2)*me3)
-@test isapprox(me1*(mo2*me3) , (me1*mo2)*me3)
-@test isapprox(me1*(me2*mo3) , (me1*me2)*mo3)
-@test isapprox(mo1*(mo2*me3) , (mo1*mo2)*me3)
-@test isapprox(mo1*(me2*mo3) , (mo1*me2)*mo3)
-@test isapprox(me1*(mo2*mo3) , (me1*mo2)*mo3)
-@test isapprox(mo1*(mo2*mo3) , (mo1*mo2)*mo3)
-
-#Rotation
-f1 = me1*e1*me1'
-f2 = me1*e2*me1'
-@test isapprox(dot(f1,f2),0.0; atol=16*eps(Float64))
-
-#Projection
-@test isapprox(me1  , project(me1,0) + project(me1,2) + project(me1,4) + project(me1,6))
-@test isapprox(mo1  , project(mo1,1) + project(mo1,3) + project(mo1,5))
-
 #Comparison with GA(4,4)
 bas44 = basis("GA44")
 E1 = bas44[1]
@@ -68,3 +43,5 @@ V4 = inject(arr4,[E1,E2,E3,E0])
 @test isapprox(embed(v1*v2*v3*v4), V1*V2*V3*V4)
 @test isapprox(embed(exp(v1*v2)),exp(V1*V2))
 @test isapprox(embed(expb(v1*v2)),expb(V1*V2))
+
+include("testcommon.jl")

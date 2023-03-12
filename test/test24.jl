@@ -35,30 +35,7 @@ mo3 = (rand()*g0 + rand()*g1 + g3*rand() + g4*rand() + g0*g1*g3*g4*(rand()*g0 + 
     g5*( rand() + rand()*g0*g1 + g0*g3*rand() + g0*rand()*g4 - rand()*g3*g1 + g1*g4/rand() + rand()*g3*g4 + rand()*g0*g1*g3*g4) +
     g2*g5*(rand()*g0 + rand()*g1 + g3*rand() + g4*rand() + g0*g1*g3*g4*(rand()*g0 + rand()*g1 + g3*rand() + g4*rand() ))
 
-    
-#Distributivity
-@test isapprox(me1*(me2+me3), me1*me2 + me1*me3)
-@test isapprox(mo1*(me2+me3), mo1*me2 + mo1*me3)
-@test isapprox(me1*(mo2+mo3), me1*mo2 + me1*mo3)
-@test isapprox(mo1*(mo2+mo3), mo1*mo2 + mo1*mo3)
 
-#Associativity
-@test isapprox(me1*(me2*me3) , (me1*me2)*me3)
-@test isapprox(mo1*(me2*me3) , (mo1*me2)*me3)
-@test isapprox(me1*(mo2*me3) , (me1*mo2)*me3)
-@test isapprox(me1*(me2*mo3) , (me1*me2)*mo3)
-@test isapprox(mo1*(mo2*me3) , (mo1*mo2)*me3)
-@test isapprox(mo1*(me2*mo3) , (mo1*me2)*mo3)
-@test isapprox(me1*(mo2*mo3) , (me1*mo2)*mo3)
-@test isapprox(mo1*(mo2*mo3) , (mo1*mo2)*mo3)
-
-
-#Projection
-@test isapprox(me1  , project(me1,0) + project(me1,2) + project(me1,4) + project(me1,6))
-@test isapprox(mo1  , project(mo1,1) + project(mo1,3) + project(mo1,5))
-
-v1 = rand()*g0 + rand()*g1 + g3*rand() + g4*rand() + rand()*g5
-v2 = rand()*g0 + rand()*g1 + g3*rand() + g4*rand() + rand()*g5
 
 
 #Comparison with GA(4,4)
@@ -91,10 +68,5 @@ V4 = inject(arr4,[G0,G1,G2,G3,G4,G5])
 @test isapprox(embed(exp(v1*v2)),exp(V1*V2))
 @test isapprox(embed(expb(v1*v2)),expb(V1*V2))
 
-
-
-#Rotation
-R = expb(v1*v2)
-no1 = R*mo1*R'
-no2 = R*mo2*R'
-@test isapprox(dot(mo1,mo2),dot(no1,no2))
+    
+include("testcommon.jl")
