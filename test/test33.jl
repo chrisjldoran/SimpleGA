@@ -55,6 +55,7 @@ mo3 = (rand()*e1 + rand()*e2 + f1*rand() + f2*rand() + e1*e2*f1*f2*(rand()*e1 + 
 @test isapprox(me1  , project(me1,0) + project(me1,2) + project(me1,4) + project(me1,6))
 @test isapprox(mo1  , project(mo1,1) + project(mo1,3) + project(mo1,5))
 
+
 #Comparison with GA(4,4)
 bas44 = basis("GA44")
 E1 = bas44[1]
@@ -89,4 +90,4 @@ V4 = inject(arr4,[E1,E2,E3,F1,F2,F3])
 R = expb(v1*v3)
 g1 = R*e1*R'
 g2 = R*e2*R'
-@test isapprox(dot(g1,g2),0.0; atol=1e-10)
+@test isapprox(dot(g1,g2),0.0; atol=16*eps(Float64))

@@ -46,6 +46,10 @@ export bar
 include("GA33.jl")
 using .GA33
 
+
+include("GA24.jl")
+using .GA24
+
 include("GA44.jl")
 using .GA44
 export construct44
@@ -65,6 +69,8 @@ function basis(alg)
         return basSTA
     elseif alg =="GA33"
         return bas33
+    elseif alg == "GA24"
+        return bas24
     elseif alg =="GA44"
         return bas44
     end
