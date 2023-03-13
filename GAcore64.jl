@@ -1,9 +1,6 @@
 #= 
-Core code for the implementation of GA(4,4).
-Uses a Uint8 representation of basis blades and bitwise operations. 
-Used for checking other algebras.
+Implementation of GA(32,32) in Julia using Uint64 bitwise operations. 
 =#
-
 import Base.:*
 import Base.:+
 import Base.:-
@@ -15,20 +12,20 @@ import LinearAlgebra.adjoint
 import ..project
 import ..expb
 
-using SparseArrays
-
-#This avoids rounding error bloating multivectors. Set to zero if unsure
-const mvtol = 1e-14
-sparsify(x, eps) = abs(x) < eps ? 0.0 : x
 
 #The Multivector type assumes that the blade list is unique and in order. But we want to avoid checking this at runtime.
-#Only use this constructor if you are certain the blade list is correct. If not, use construct44()
+#Only use this constructor if you are certain the blade list is correct. If not, use construct64()
 struct Multivector
-    bas::Vector{UInt8}
+    bas::Vector{UInt64}
     val::Vector{Float64}
 end
 
-function construct44(bs,vs)
+basscl = 0x0000000000000000
+mvzero = Multivector([basscl], [0.0])
+mvone = Multivector([basscl], [1.0])
+
+
+function construct64(bs,vs)
     if length(bs) != length(unique(bs))
         error("List of blades must be unique")
     else
@@ -37,7 +34,28 @@ function construct44(bs,vs)
     end
 end
 
-mvzero = Multivector([0x00], [0.0])
+
+#This avoids rounding error bloating multivectors. 
+const mvtol = 1e-14
+
+function mvtidy(mv::Multivector)
+    ln=length(filter(x->!isapprox(x,0.0;atol = mvtol), mv.val))
+    if ln==0
+        return mvzero
+    end
+    rsbas = zeros(UInt64,ln)
+    rsval = zeros(Float64,ln)
+    j=1
+    for i = 1:length(mv.bas)
+        if !isapprox(mv.val[i],0.0)
+            rsbas[j]=mv.bas[i]
+            rsval[j]=mv.val[i]
+            j+=1
+        end
+    end
+    return Multivector(rsbas,rsval)
+end
+
 
 #Addition / subtraction
 function -(mv::Multivector)
@@ -46,14 +64,29 @@ end
 
 
 function +(mv1::Multivector, mv2::Multivector)
-    res = SparseVector(256,mv1.bas .+ 1, mv1.val) + SparseVector(256,mv2.bas .+ 1, mv2.val)
-    sps = sparse(sparsify.(res,mvtol))
-    return Multivector(sps.nzind .- 1,sps.nzval)
+    rsbas=sort(union(mv1.bas,mv2.bas))
+    l1 = length(mv1.bas)
+    l2 = length(mv2.bas)
+    ln=length(rsbas)
+    rsval=zeros(Float64,ln)
+    i = 1
+    j = 1
+    for k in 1:ln
+        if i <= l1 && rsbas[k] == mv1.bas[i]
+            rsval[k]+=mv1.val[i]
+            i+=1
+        end
+        if j <= l2 && rsbas[k] == mv2.bas[j]
+            rsval[k]+=mv2.val[j]
+            j+=1
+        end
+    end
+    return Multivector(rsbas, rsval)
 end
 
 
 function +(nm::Number,mv::Multivector)
-    mv2 = Multivector([0x00],[convert(Float64,nm)])
+    mv2 = Multivector([basscl],[convert(Float64,nm)])
     return (mv+mv2)
 end
 
@@ -73,25 +106,36 @@ function -(mv1::Multivector,mv2::Multivector)
     return mv1+(-(mv2))
 end
 
+
+
 #Multiplication
-function gaprodsign(bld1::UInt8, bld2::UInt8)
-    #Expects UInt8s
+
+function gaprodsign(bld1, bld2)
     tp1 = xor( bld2, bld2 << 1 )
-    cntones = count_ones((bld1 & 0xaa) & tp1)
+    cntones = count_ones((bld1 & 0xaaaaaaaaaaaaaaaa) & tp1)
     return convert(Int8, 1 - 2* (cntones % 2))
 end
 
 
-function *(mv1::Multivector,mv2::Multivector)
-    res = zeros(Float64,256)
-    for i in 1:length(mv1.bas)
-        for j in 1:length(mv2.bas)
-            res[xor(mv1.bas[i],mv2.bas[j])+1] += gaprodsign(mv1.bas[i],mv2.bas[j])*mv1.val[i]*mv2.val[j]
-        end
-    end
-    sps = sparse(sparsify.(res,mvtol))
-    return Multivector(sps.nzind .- 1,sps.nzval)
+
+function *(num::Number,mv::Multivector)
+    num = convert(Float64,num)
+    return Multivector(mv.bas,num*mv.val)
 end
+
+
+function *(mv1::Multivector,mv2::Multivector)
+    res = 0
+    l1 = length(mv1.bas)
+    for i in 1:l1
+        bs = map(bd->xor(mv1.bas[i],bd), mv2.bas)
+        vs = map((bd,vl) -> mv1.val[i]*vl*gaprodsign(mv1.bas[i],bd),mv2.bas,mv2.val)
+        p = sortperm(bs)
+        res += Multivector(sort(bs),vs[p])
+    end
+    return mvtidy(res)
+end
+
 
 
 function *(num::Number,mv::Multivector)
@@ -112,18 +156,25 @@ end
 
 #Reverse
 
-function grd(xin::UInt8)
-    if count_ones(xin & 0xc0) == 1
-        xin = xor(xin,0x3f)
+#Converts conformal split to traditional rep for grade operation
+function bldconvert(xin::UInt64) 
+    res = xin
+    msk = 0xc000000000000000
+    chk = ~msk
+    for i in 1:31
+        if count_ones(res & msk) == 1
+            res = xor(res,chk)
+        end
+        msk = msk >> 2
+        chk = chk >> 2
     end
-    if count_ones(xin & 0x30) == 1
-        xin = xor(xin,0x0f)
-    end
-    if count_ones(xin & 0x0c) == 1
-        xin = xor(xin, 0x03)
-    end
-    return count_ones(xin)
+    return res
 end
+
+function grd(xin::UInt64)
+    return count_ones(bldconvert(xin))
+end
+
 
 function adjoint(mv::Multivector)
     rsval = similar(mv.val)
@@ -136,8 +187,7 @@ function adjoint(mv::Multivector)
     end
     return Multivector(mv.bas,rsval)
 end
-
-
+    
 #Grade and projection
 function project(mv::Multivector,n::Int64)
     rsbas = filter(x->grd(x)==n,mv.bas)
@@ -153,8 +203,9 @@ function project(mv::Multivector,n::Int64)
     return Multivector(rsbas, rsval)
 end
 
+
 function tr(mv::Multivector)
-    if mv.bas[1]==0x00
+    if mv.bas[1]==basscl
         return mv.val[1]
     else
         return 0.0
@@ -174,6 +225,7 @@ function dot(mv1::Multivector,mv2::Multivector)
     end
     return res
 end
+
 
 
 #Exponentiation
@@ -199,7 +251,8 @@ function expb(a::Multivector)
     return (1-0.5*delt + 0.375*delt*delt)*R
 end
 
-
-Base.isapprox(mv1::Multivector, mv2::Multivector) = isapprox(SparseVector(256,mv1.bas .+ 1, mv1.val), 
-        SparseVector(256,mv2.bas .+ 1, mv2.val))
-
+#Comparison
+function Base.isapprox(mv1::Multivector, mv2::Multivector)
+    tmp = mvtidy(mv1-mv2)
+    return tmp.bas == [basscl] && tmp.val ==[0.0]
+end
