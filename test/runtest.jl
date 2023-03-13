@@ -4,8 +4,6 @@ using Test
 include("../wrapper.jl")
 using .GA
 
-#bas = basis("GA20")
-
 @testset "GA Tests" begin
     include("test20.jl")
     include("test30.jl")
@@ -16,5 +14,6 @@ using .GA
     include("test33.jl")
     include("test24.jl")
     include("test44.jl")
+    include("test64.jl")
 end
 

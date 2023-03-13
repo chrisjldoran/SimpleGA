@@ -54,6 +54,10 @@ include("GA44.jl")
 using .GA44
 export construct44
 
+include("GA64.jl")
+using .GA64
+export construct64
+
 function basis(alg)
     if alg == "GA20" 
         return bas20
@@ -73,6 +77,8 @@ function basis(alg)
         return bas24
     elseif alg =="GA44"
         return bas44
+    elseif alg == "GA64"
+        return bas64
     end
 end
 
